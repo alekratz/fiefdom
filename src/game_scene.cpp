@@ -6,7 +6,8 @@ constexpr auto MAX_DAYS = 28;
 constexpr auto MAX_MONTH = 12;
 
 GameScene::GameScene()
-    : m_game_grid(std::make_unique<GameGrid>())
+    : Loggable("GameScene")
+    , m_game_grid(std::make_unique<GameGrid>())
     , m_money(START_MONEY)
     , m_month(3)
     , m_day(1)
@@ -33,9 +34,13 @@ void GameScene::update() {
             y_offset = (ev.motion.y - (GAME_HEIGHT / 2)) * GRID_MOVE_SPEED;
         }
         else if(ev.type == SDL_KEYDOWN) {
+            // TODO : move this to its own "game scene keyboard handler" object or something
             switch(ev.key.keysym.sym) {
             case SDLK_b:
-                m_mode = (m_mode == GameMode::Building) ? GameMode::None : GameMode::Building;
+                if(!ev.key.repeat) {
+                    m_mode = (m_mode == GameMode::Building) ? GameMode::None : GameMode::Building;
+                    m_logger->debug("Toggling gamemode between building");
+                }
                 break;
             }
         }

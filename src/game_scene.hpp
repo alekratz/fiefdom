@@ -2,6 +2,7 @@
 #define FIEFDOM_GAME_SCENE_HPP
 
 #include "types.hpp"
+#include "util.hpp"
 #include "game_grid.hpp"
 #include "serf.hpp"
 
@@ -10,7 +11,7 @@ enum class GameMode {
     Building,
 };
 
-class GameScene : public Entity {
+class GameScene : public Entity, Loggable {
     using this_t = GameScene;
     using base_t = Entity;
 public:
