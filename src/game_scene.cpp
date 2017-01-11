@@ -1,25 +1,34 @@
 #include "game_scene.hpp"
 #include "globals.hpp"
+#include <iostream>
 
 constexpr auto START_MONEY = 1000;
 constexpr auto MAX_DAYS = 28;
 constexpr auto MAX_MONTH = 12;
 
+static auto logger = spdlog::stdout_color_mt("callback");
+static void test_callback() {
+    logger->debug("toggle mode"); 
+}
+
 GameScene::GameScene()
     : Loggable("GameScene")
+    , mode(GameMode::None)
     , m_game_grid(std::make_unique<GameGrid>())
+    , m_toolbar(std::make_unique<Toolbar>(*this))
     , m_money(START_MONEY)
     , m_month(3)
-    , m_day(1)
-    , m_mode(GameMode::None) {
+    , m_day(1) {
     m_serfs.push_back(std::make_unique<Serf>("Test", 0, 0));
-    
+    m_toolbar->add_item("&building", test_callback);
+    m_toolbar->add_item("&select", test_callback);
 }
 
 void GameScene::draw() {
     for(auto& s : m_serfs)
         s->draw();
     m_game_grid->draw();
+    m_toolbar->draw();
 }
 
 void GameScene::update() {
@@ -33,20 +42,10 @@ void GameScene::update() {
             x_offset = (ev.motion.x - (GAME_WIDTH / 2)) * GRID_MOVE_SPEED;
             y_offset = (ev.motion.y - (GAME_HEIGHT / 2)) * GRID_MOVE_SPEED;
         }
-        else if(ev.type == SDL_KEYDOWN) {
-            // TODO : move this to its own "game scene keyboard handler" object or something
-            switch(ev.key.keysym.sym) {
-            case SDLK_b:
-                if(!ev.key.repeat) {
-                    m_mode = (m_mode == GameMode::Building) ? GameMode::None : GameMode::Building;
-                    m_logger->debug("Toggling gamemode between building");
-                }
-                break;
-            }
-        }
     }
 
     m_game_grid->update();
     for(auto& s : m_serfs)
         s->update();
+    m_toolbar->update();
 }

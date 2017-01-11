@@ -5,6 +5,7 @@
 #include "util.hpp"
 #include "game_grid.hpp"
 #include "serf.hpp"
+#include "toolbar.hpp"
 
 enum class GameMode {
     None,
@@ -22,13 +23,14 @@ public:
     virtual void draw() override;
     virtual void update() override;
 
+    GameMode mode;
 private:
     GameGrid_p m_game_grid;
+    Toolbar_p m_toolbar;
     vec<Serf_p> m_serfs;
     int32_t m_money;
     int32_t m_month;
     int32_t m_day;
-    GameMode m_mode;
 };
 
 using GameScene_p = uptr<GameScene>;
