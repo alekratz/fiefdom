@@ -10,7 +10,7 @@ struct Loggable {
     Loggable(cstref name) {
         m_logger = spdlog::get(name);
         if(m_logger == nullptr)
-            m_logger = spdlog::stdout_logger_mt(name, true);
+            m_logger = spdlog::stdout_color_mt(name);
     }
     sptr<spdlog::logger> m_logger;
 };
