@@ -11,6 +11,42 @@ constexpr auto TOOLBAR_ITEM_HPADDING = 13;
 const SDL_Color WHITE { 255, 255, 255, SDL_ALPHA_OPAQUE };
 const SDL_Color BLACK { 0, 0, 0, SDL_ALPHA_OPAQUE };
 
+Toolbar::Toolbar(GameScene& game_scene) : m_game_scene(game_scene) { }
+
+void Toolbar::untoggle_all() {
+    for(auto& t : m_items) {
+        t->toggled = false;
+    }
+}
+
+void Toolbar::draw() {
+    // Base toolbar
+    SDL_Rect bar { -1, -1, GAME_WIDTH + 2, TOOLBAR_HEIGHT };
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(renderer, &bar);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawRect(renderer, &bar);
+    
+    // Toolbar items
+    for(auto& t : m_items) {
+        t->draw();
+    }
+}
+
+void Toolbar::update() {
+
+    for(auto& t : m_items) {
+        t->update();
+    }
+}
+
+void Toolbar::add_item(cstref text, Callback_t callback) {
+    static auto x_offset = TOOLBAR_ITEM_HPADDING;
+    auto new_item = std::make_unique<ToolbarItem>(m_game_scene, x_offset, TOOLBAR_ITEM_VPADDING, text, callback);
+    x_offset += new_item->get_width() + TOOLBAR_ITEM_HPADDING;
+    m_items.push_back(std::move(new_item));
+}
+
 ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offset, cstref name, Toolbar::Callback_t callback)
     : Loggable("ToolbarItem")
     , name(name)
@@ -109,40 +145,4 @@ void ToolbarItem::update() {
                 callback(m_game_scene, *this);
         }
     }
-}
-
-Toolbar::Toolbar(GameScene& game_scene) : m_game_scene(game_scene) { }
-
-void Toolbar::untoggle_all() {
-    for(auto& t : m_items) {
-        t->toggled = false;
-    }
-}
-
-void Toolbar::draw() {
-    // Base toolbar
-    SDL_Rect bar { -1, -1, GAME_WIDTH + 2, TOOLBAR_HEIGHT };
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    SDL_RenderFillRect(renderer, &bar);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderDrawRect(renderer, &bar);
-    
-    // Toolbar items
-    for(auto& t : m_items) {
-        t->draw();
-    }
-}
-
-void Toolbar::update() {
-
-    for(auto& t : m_items) {
-        t->update();
-    }
-}
-
-void Toolbar::add_item(cstref text, Callback_t callback) {
-    static auto x_offset = TOOLBAR_ITEM_HPADDING;
-    auto new_item = std::make_unique<ToolbarItem>(m_game_scene, x_offset, TOOLBAR_ITEM_VPADDING, text, callback);
-    x_offset += new_item->get_width() + TOOLBAR_ITEM_HPADDING;
-    m_items.push_back(std::move(new_item));
 }
