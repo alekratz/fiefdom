@@ -23,6 +23,7 @@ public:
     virtual void draw() override;
     virtual void update() override;
 
+public:
     GameMode mode;
 private:
     GameGrid_p m_game_grid;

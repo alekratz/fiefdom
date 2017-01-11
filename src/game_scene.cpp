@@ -7,8 +7,9 @@ constexpr auto MAX_DAYS = 28;
 constexpr auto MAX_MONTH = 12;
 
 static auto logger = spdlog::stdout_color_mt("callback");
-static void test_callback() {
-    logger->debug("toggle mode"); 
+
+static void building_mode_callback(GameScene& game_scene, ToolbarItem& caller) {
+    logger->debug("building mode callback");
 }
 
 GameScene::GameScene()
@@ -20,14 +21,15 @@ GameScene::GameScene()
     , m_month(3)
     , m_day(1) {
     m_serfs.push_back(std::make_unique<Serf>("Test", 0, 0));
-    m_toolbar->add_item("&building", test_callback);
-    m_toolbar->add_item("&select", test_callback);
+    m_toolbar->add_item("&building", building_mode_callback);
+    //m_toolbar->add_item("&select", test_callback);
 }
 
 void GameScene::draw() {
     for(auto& s : m_serfs)
         s->draw();
     m_game_grid->draw();
+    
     m_toolbar->draw();
 }
 
@@ -49,3 +51,4 @@ void GameScene::update() {
         s->update();
     m_toolbar->update();
 }
+

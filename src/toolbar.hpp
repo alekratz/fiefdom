@@ -15,7 +15,7 @@ class Toolbar : public Entity {
     using this_t = Toolbar;
     using base_t = Entity;
 public:
-    using Callback_t = std::function<void()>;
+    using Callback_t = std::function<void(GameScene&, ToolbarItem&)>;
 public:
     Toolbar(GameScene& game_scene);
     ~Toolbar() = default;
@@ -39,7 +39,7 @@ using Toolbar_p = uptr<Toolbar>;
 
 class ToolbarItem : public Entity, Loggable {
 public:
-    ToolbarItem(int32_t x_offset, int32_t y_offset, cstref name, Toolbar::Callback_t callback);
+    ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offset, cstref name, Toolbar::Callback_t callback);
     virtual ~ToolbarItem();
 
 public:
@@ -47,7 +47,7 @@ public:
      * Gets the width in pixels of the toolbar item.
      */
     auto get_width() { 
-      return width;
+        return m_width;
     }
 
     virtual void draw() override;
@@ -62,8 +62,9 @@ public:
 
     bool toggled;
 private:
-    int32_t width, height;
+    int32_t m_width, m_height;
     int32_t x_offset, y_offset;
+    GameScene& m_game_scene;
 
 public:
     SDL_Texture* m_normal_texture;

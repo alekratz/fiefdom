@@ -11,7 +11,7 @@ constexpr auto TOOLBAR_ITEM_HPADDING = 13;
 const SDL_Color WHITE { 255, 255, 255, SDL_ALPHA_OPAQUE };
 const SDL_Color BLACK { 0, 0, 0, SDL_ALPHA_OPAQUE };
 
-ToolbarItem::ToolbarItem(int32_t x_offset, int32_t y_offset, cstref name, Toolbar::Callback_t callback)
+ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offset, cstref name, Toolbar::Callback_t callback)
     : Loggable("ToolbarItem")
     , name(name)
     , callback(callback)
@@ -19,6 +19,7 @@ ToolbarItem::ToolbarItem(int32_t x_offset, int32_t y_offset, cstref name, Toolba
     , toggled(false)
     , x_offset(x_offset)
     , y_offset(y_offset)
+    , m_game_scene(game_scene)
     , m_normal_texture(nullptr)
     , m_toggled_texture(nullptr) {
 
@@ -28,13 +29,14 @@ ToolbarItem::ToolbarItem(int32_t x_offset, int32_t y_offset, cstref name, Toolba
         this->name.erase(index, 1);
     }
     // Create textures for this item so we don't have to do these weird calculations every frame
-    TTF_SizeText(regular_font, this->name.c_str(), &width, &height);
+    TTF_SizeText(regular_font, this->name.c_str(), &m_width, &m_height);
     m_normal_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
-        SDL_TEXTUREACCESS_STATIC | SDL_TEXTUREACCESS_TARGET, width, height);
+        SDL_TEXTUREACCESS_STATIC | SDL_TEXTUREACCESS_TARGET, m_width, m_height);
     assert(m_normal_texture && "Could not create texture");
     m_toggled_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
-        SDL_TEXTUREACCESS_STATIC | SDL_TEXTUREACCESS_TARGET, width, height);
+        SDL_TEXTUREACCESS_STATIC | SDL_TEXTUREACCESS_TARGET, m_width, m_height);
     assert(m_toggled_texture && "Could not create texture");
+
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_TRANSPARENT);
     SDL_SetRenderTarget(renderer, m_toggled_texture);
     SDL_RenderClear(renderer);
@@ -48,7 +50,7 @@ ToolbarItem::ToolbarItem(int32_t x_offset, int32_t y_offset, cstref name, Toolba
     if(index != str::npos) {
         text_surface = TTF_RenderText_Blended(regular_font, this->name.c_str(), SDL_Color { 0, 0, 0, SDL_ALPHA_OPAQUE });
         text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
-        SDL_Rect draw_rect { 0, 0, width, height };
+        SDL_Rect draw_rect { 0, 0, m_width, m_height };
         SDL_RenderCopy(renderer, text_texture, nullptr, &draw_rect);
         assert(text_surface && "Could not render font");
         hotkey = this->name[index];
@@ -62,7 +64,7 @@ ToolbarItem::ToolbarItem(int32_t x_offset, int32_t y_offset, cstref name, Toolba
         TTF_SizeText(regular_font, hotkey_str.c_str(), &hotkey_w, nullptr);
         draw_rect.x = pre_width;
         draw_rect.w = hotkey_w;
-        draw_rect.h = height;
+        draw_rect.h = m_height;
         auto hotkey_surface = TTF_RenderText_Shaded(regular_font, (str() + hotkey).c_str(), WHITE, BLACK);
         auto hotkey_texture = SDL_CreateTextureFromSurface(renderer, hotkey_surface);
         SDL_RenderCopy(renderer, hotkey_texture, nullptr, &draw_rect);
@@ -92,7 +94,7 @@ ToolbarItem::~ToolbarItem() {
 void ToolbarItem::draw() {
     SDL_SetRenderTarget(renderer, nullptr);
     auto texture = toggled ? m_toggled_texture : m_normal_texture;
-    SDL_Rect rect { x_offset, y_offset, width, height };
+    SDL_Rect rect { x_offset, y_offset, m_width, m_height };
     SDL_RenderCopy(renderer, texture, nullptr, &rect);
 }
 
@@ -103,10 +105,8 @@ void ToolbarItem::update() {
         int count = SDL_PeepEvents(evs, EVENT_SZ, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
         for(int i = 0; i < count; i++) {
             auto ev = evs[i];
-            if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == hotkey) {
-                toggled = !toggled;
-                callback();
-            }
+            if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == hotkey)
+                callback(m_game_scene, *this);
         }
     }
 }
@@ -136,7 +136,7 @@ void Toolbar::update() {
 
 void Toolbar::add_item(cstref text, Callback_t callback) {
     static auto x_offset = TOOLBAR_ITEM_HPADDING;
-    auto new_item = std::make_unique<ToolbarItem>(x_offset, TOOLBAR_ITEM_VPADDING, text, callback);
+    auto new_item = std::make_unique<ToolbarItem>(m_game_scene, x_offset, TOOLBAR_ITEM_VPADDING, text, callback);
     x_offset += new_item->get_width() + TOOLBAR_ITEM_HPADDING;
     m_items.push_back(std::move(new_item));
 }
