@@ -6,11 +6,8 @@ constexpr auto START_MONEY = 1000;
 constexpr auto MAX_DAYS = 28;
 constexpr auto MAX_MONTH = 12;
 
-static auto logger = spdlog::stdout_color_mt("callback");
-
-static void building_mode_callback(GameScene& game_scene, ToolbarItem& caller) {
-    logger->debug("building mode callback");
-}
+/* Callback prototypes */
+void building_mode_callback(GameScene&, ToolbarItem&);
 
 GameScene::GameScene()
     : Loggable("GameScene")
@@ -52,3 +49,12 @@ void GameScene::update() {
     m_toolbar->update();
 }
 
+void building_mode_callback(GameScene& scene, ToolbarItem& item) {
+    if(item.toggled) {
+        item.toggled = false;
+    }
+    else {
+        scene.m_toolbar->untoggle_all();
+        item.toggled = true;
+    }
+}

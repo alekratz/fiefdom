@@ -113,6 +113,12 @@ void ToolbarItem::update() {
 
 Toolbar::Toolbar(GameScene& game_scene) : m_game_scene(game_scene) { }
 
+void Toolbar::untoggle_all() {
+    for(auto& t : m_items) {
+        t->toggled = false;
+    }
+}
+
 void Toolbar::draw() {
     // Base toolbar
     SDL_Rect bar { -1, -1, GAME_WIDTH + 2, TOOLBAR_HEIGHT };

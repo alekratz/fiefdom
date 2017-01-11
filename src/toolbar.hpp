@@ -21,9 +21,10 @@ public:
     ~Toolbar() = default;
 
 public:
+    /* Untoggles all toolbar items */
+    void untoggle_all();
     virtual void draw() override;
     virtual void update() override;
-
 
     /**
      * Adds an item to the toolbar, using the Windows style keyboard shortcut (i.e. &File, E&xit, etc.)
