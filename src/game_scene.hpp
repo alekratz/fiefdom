@@ -6,10 +6,14 @@
 #include "game_grid.hpp"
 #include "serf.hpp"
 #include "toolbar.hpp"
+#include "subscenes.hpp"
+
+class Game;
 
 enum class GameMode {
     None,
     Building,
+    Quitting,
 };
 
 class GameScene : public Entity, Loggable {
@@ -37,6 +41,8 @@ private:
     int32_t m_money;
     int32_t m_month;
     int32_t m_day;
+    Subscene_p m_building_subscene;
+    Subscene_p m_quit_subscene;
 /* Friends */
 private:
     /*
@@ -50,6 +56,7 @@ private:
     and that's not good eats.
     */
     friend void building_mode_callback(GameScene&, ToolbarItem&);
+    friend void quit_callback(GameScene&, ToolbarItem&);
 };
 
 using GameScene_p = uptr<GameScene>;
