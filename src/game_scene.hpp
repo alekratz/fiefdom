@@ -54,6 +54,8 @@ private:
     While you and I are aware that a ToolbarItem object may not exist without a GameScene object (which is functionally
     a singleton), we can just as easily violate these rules with the compiler being completely unaware that we did that,
     and that's not good eats.
+
+    You will see this pattern anytime we deal with callbacks; get used to it.
     */
     friend void building_mode_callback(GameScene&, ToolbarItem<this_t>&);
     friend void quit_callback(GameScene&, ToolbarItem<this_t>&);

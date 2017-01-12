@@ -82,6 +82,9 @@ private:
     Building m_build_mode;
 
 private:
+    /*
+    If you're wondering why I'm using friend methods, see the bottom of src/game_scene.hpp
+    */
     friend void farm_callback(this_t&, ToolbarItem<this_t>&);
     friend void cancel_callback(this_t&, ToolbarItem<this_t>&);
 };
