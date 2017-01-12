@@ -158,7 +158,7 @@ void ToolbarItem::update() {
         int count = SDL_PeepEvents(evs, EVENT_SZ, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
         for(int i = 0; i < count; i++) {
             auto ev = evs[i];
-            if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == hotkey)
+            if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == hotkey && !ev.key.repeat)
                 callback(m_game_scene, *this);
         }
     }
