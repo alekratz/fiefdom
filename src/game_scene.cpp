@@ -71,6 +71,7 @@ void GameScene::update() {
             if(m_building_subscene.done()) {
                 mode = GameMode::None;
                 m_toolbar.untoggle_all();
+                m_building_subscene.reset();
             }
         } break;
     case GameMode::Quitting:

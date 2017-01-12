@@ -80,8 +80,8 @@ private:
     Toolbar<this_t> m_toolbar;
 
 private:
-    friend void farm_callback(GameScene&, ToolbarItem<this_t>&);
-    friend void cancel_callback(GameScene&, ToolbarItem<this_t>&);
+    friend void farm_callback(this_t&, ToolbarItem<this_t>&);
+    friend void cancel_callback(this_t&, ToolbarItem<this_t>&);
 };
 
 #endif //FIEFDOM_SUBSCENES_HPP

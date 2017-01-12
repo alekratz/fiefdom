@@ -109,4 +109,6 @@ void BuildSubscene::update() {
 }
 
 void farm_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&) { }
-void cancel_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&) { }
+void cancel_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>&) {
+    subscene.m_done = true;
+}
