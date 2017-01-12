@@ -129,6 +129,14 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
         assert(text_surface && "Could not render font");
         text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
         SDL_RenderCopy(renderer, text_texture, nullptr, nullptr);
+
+        /* toggled texture */
+        SDL_FreeSurface(text_surface);
+        SDL_DestroyTexture(text_texture);
+        text_surface = TTF_RenderText_Shaded(regular_font, this->name.c_str(), WHITE, BLACK);
+        text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+        SDL_Rect draw_rect { 0, 0, m_width, m_height };
+        SDL_RenderCopy(renderer, text_texture, nullptr, &draw_rect);
     }
     assert(m_normal_texture && "Default texture was not created");
     
