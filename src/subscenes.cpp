@@ -6,16 +6,19 @@ const auto DRAW_BOX_WIDTH = 360;
 const auto DRAW_BOX_HEIGHT = 240;
 
 YesNoSubscene::YesNoSubscene(cstref prompt)
-    : Subscene()
+    : Entity()
+    , m_prompt(prompt)
     , m_draw_box({CENTER(GAME_WIDTH, DRAW_BOX_WIDTH), CENTER(GAME_HEIGHT, DRAW_BOX_HEIGHT), 
-            DRAW_BOX_WIDTH, DRAW_BOX_HEIGHT}) {
+            DRAW_BOX_WIDTH, DRAW_BOX_HEIGHT})
+    , m_done(false) {
         m_box_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
             SDL_TEXTUREACCESS_STATIC | SDL_TEXTUREACCESS_TARGET, GAME_WIDTH, GAME_HEIGHT);
         SDL_SetRenderTarget(renderer, m_box_texture);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-        SDL_RenderFillRect(renderer, &m_draw_box);
+        SDL_RenderFillRect(renderer, nullptr);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-        SDL_RenderDrawRect(renderer, &m_draw_box);
+        SDL_RenderDrawRect(renderer, nullptr);
+        SDL_SetRenderTarget(renderer, nullptr);
     }
 
 YesNoSubscene::~YesNoSubscene() {

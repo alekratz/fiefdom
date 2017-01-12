@@ -6,19 +6,10 @@
 
 class GameScene;
 
-class Subscene : public Entity {
-public:
-    Subscene() : m_done(false) { }
-    virtual bool done() { return m_done; }
-protected:
-    bool m_done;
-};
-
 template<typename T>
 using Subscene_ptr = uptr<T>;
-using Subscene_p = Subscene_ptr<Subscene>;
 
-class PauseSubscene : public Subscene {
+class PauseSubscene : public Entity {
     using this_t = PauseSubscene;
 public:
     PauseSubscene();
@@ -27,7 +18,7 @@ private:
 
 };
 
-class YesNoSubscene : public Subscene {
+class YesNoSubscene : public Entity {
     using this_t = YesNoSubscene;
 public:
     YesNoSubscene(cstref prompt);
@@ -37,10 +28,15 @@ public:
     virtual void update() override;
 
     bool result() { return m_result; }
+    bool done() { return m_done; }
 private:
+    str m_prompt;
     SDL_Rect m_draw_box;
     SDL_Texture* m_box_texture;
     bool m_result;
+    bool m_done;
 };
+
+using YesNoSubscene_p = Subscene_ptr<YesNoSubscene>;
 
 #endif //FIEFDOM_SUBSCENES_HPP

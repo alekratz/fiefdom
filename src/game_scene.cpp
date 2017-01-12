@@ -11,9 +11,10 @@ constexpr auto MAX_MONTH = 12;
 void building_mode_callback(GameScene&, ToolbarItem&);
 void quit_callback(GameScene&, ToolbarItem&);
 
-GameScene::GameScene()
+GameScene::GameScene(bool& running)
     : Loggable("GameScene")
     , mode(GameMode::None)
+    , m_running(running)
     , m_game_grid(std::make_unique<GameGrid>())
     , m_toolbar(std::make_unique<Toolbar>(*this))
     , m_money(START_MONEY)
@@ -73,6 +74,12 @@ void GameScene::update() {
     case GameMode::Quitting:
         {
             m_quit_subscene->update();
+            if(m_quit_subscene->done()) {
+                m_running = !m_quit_subscene->result();
+                mode = GameMode::None;
+                m_toolbar->untoggle_all();
+                m_quit_subscene = nullptr;
+            }
         } break;
     }
 }

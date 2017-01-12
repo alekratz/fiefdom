@@ -23,7 +23,7 @@ class GameScene : public Entity, Loggable {
 
 /* ctor/dtor */
 public:
-    GameScene();
+    GameScene(bool& running);
     ~GameScene() = default;
 
 /* Operations */
@@ -35,14 +35,15 @@ public:
 public:
     GameMode mode;
 private:
+    bool& m_running;
     GameGrid_p m_game_grid;
     Toolbar_p m_toolbar;
     vec<Serf_p> m_serfs;
     int32_t m_money;
     int32_t m_month;
     int32_t m_day;
-    Subscene_p m_building_subscene;
-    Subscene_p m_quit_subscene;
+    Entity_p m_building_subscene;
+    YesNoSubscene_p m_quit_subscene;
 /* Friends */
 private:
     /*

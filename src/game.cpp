@@ -12,7 +12,7 @@ int32_t y_offset = 0;
 Game::Game()
     : Loggable("game")
     , m_is_running(false)
-    , m_game_scene(std::make_unique<GameScene>()) {
+    , m_game_scene(std::make_unique<GameScene>(m_is_running)) {
     
 }
 
