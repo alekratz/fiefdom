@@ -95,20 +95,38 @@ void cancel_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&);
 */
 BuildSubscene::BuildSubscene()
     : m_done(false)
-    , m_toolbar(*this, 23){ /* TODO : get rid of the magic number and base it off of toolbar dimensions */
+    , m_toolbar(*this, 23) /* TODO : get rid of the magic number and base it off of toolbar dimensions */
+    , m_build_mode(Building::None) {
     m_toolbar.add_item("&farm", farm_callback);
     m_toolbar.add_item("&cancel", cancel_callback);
 }
 
 void BuildSubscene::draw() {
     m_toolbar.draw();
+    switch(m_build_mode) {
+        case Building::None: {
+        } break;
+        case Building::Farm: {
+            /* Draw farm drawing tools here */
+        } break;
+    }
 }
 
 void BuildSubscene::update() {
-    m_toolbar.update();
+    switch(m_build_mode) {
+        case Building::None: {
+            m_toolbar.update();
+        } break;
+        case Building::Farm: {
+            /* Update farm drawing tools here */
+        } break;
+    }
 }
 
-void farm_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&) { }
+void farm_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&) {
+
+}
 void cancel_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>&) {
     subscene.m_done = true;
 }
+

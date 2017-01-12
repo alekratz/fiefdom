@@ -3,6 +3,7 @@
 
 #include "types.hpp"
 #include "toolbar.hpp"
+#include "buildings.hpp"
 #include <SDL.h>
 
 class GameScene;
@@ -78,6 +79,7 @@ public:
 private:
     bool m_done;
     Toolbar<this_t> m_toolbar;
+    Building m_build_mode;
 
 private:
     friend void farm_callback(this_t&, ToolbarItem<this_t>&);

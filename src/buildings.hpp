@@ -4,6 +4,11 @@
 #include "types.hpp"
 #include <SDL.h>
 
+enum class Building {
+    None,
+    Farm,
+};
+
 class Farm : public Entity {
     using this_t = Farm;
     using base_t = Entity;
