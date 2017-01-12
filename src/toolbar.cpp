@@ -74,8 +74,6 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
     assert(m_toggled_texture && "Could not create texture");
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_TRANSPARENT);
-    SDL_SetRenderTarget(renderer, m_toggled_texture);
-    SDL_RenderClear(renderer);
     SDL_SetRenderTarget(renderer, m_normal_texture);
     SDL_RenderClear(renderer);
 
@@ -84,6 +82,7 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
     SDL_Texture* text_texture = nullptr;
 
     if(index != str::npos) {
+        /* normal texture */
         text_surface = TTF_RenderText_Blended(regular_font, this->name.c_str(), SDL_Color { 0, 0, 0, SDL_ALPHA_OPAQUE });
         text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
         SDL_Rect draw_rect { 0, 0, m_width, m_height };
@@ -91,8 +90,8 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
         assert(text_surface && "Could not render font");
         hotkey = this->name[index];
         auto hotkey_str = str() + hotkey;
-        // the way we figure out where to blit the hotkey is to get the length of the string before the hotkey, and then
-        // blit starting from there
+        /* the way we figure out where to blit the hotkey is to get the length of the string before the hotkey, and
+           then blit starting from there */
         auto pre = this->name.substr(0, index);
         int32_t pre_width;
         TTF_SizeText(regular_font, pre.c_str(), &pre_width, nullptr);
@@ -103,6 +102,24 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
         draw_rect.h = m_height;
         auto hotkey_surface = TTF_RenderText_Shaded(regular_font, (str() + hotkey).c_str(), WHITE, BLACK);
         auto hotkey_texture = SDL_CreateTextureFromSurface(renderer, hotkey_surface);
+        SDL_RenderCopy(renderer, hotkey_texture, nullptr, &draw_rect);
+        SDL_FreeSurface(hotkey_surface);
+        SDL_DestroyTexture(hotkey_texture);
+
+        /* toggled texture */
+        SDL_FreeSurface(text_surface);
+        SDL_DestroyTexture(text_texture);
+        text_surface = TTF_RenderText_Shaded(regular_font, this->name.c_str(), WHITE, BLACK);
+        SDL_SetRenderTarget(renderer, m_toggled_texture);
+        SDL_RenderClear(renderer);
+        text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+        draw_rect = { 0, 0, m_width, m_height };
+        SDL_RenderCopy(renderer, text_texture, nullptr, &draw_rect);
+        draw_rect.x = pre_width;
+        draw_rect.w = hotkey_w;
+        draw_rect.h = m_height;
+        hotkey_surface = TTF_RenderText_Shaded(regular_font, (str() + hotkey).c_str(), BLACK, WHITE);
+        hotkey_texture = SDL_CreateTextureFromSurface(renderer, hotkey_surface);
         SDL_RenderCopy(renderer, hotkey_texture, nullptr, &draw_rect);
         SDL_FreeSurface(hotkey_surface);
         SDL_DestroyTexture(hotkey_texture);

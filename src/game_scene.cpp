@@ -50,11 +50,13 @@ void GameScene::update() {
 }
 
 void building_mode_callback(GameScene& scene, ToolbarItem& item) {
-    if(item.toggled) {
-        item.toggled = false;
+    bool toggled = item.toggled;
+    scene.m_toolbar->untoggle_all();
+    if(toggled) {
+        scene.mode = GameMode::None;
     }
     else {
-        scene.m_toolbar->untoggle_all();
         item.toggled = true;
+        scene.mode = GameMode::Building;
     }
 }
