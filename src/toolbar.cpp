@@ -168,6 +168,14 @@ void ToolbarItem::update() {
             auto ev = evs[i];
             if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == hotkey)
                 callback(m_game_scene, *this);
+            else if(ev.type == SDL_MOUSEBUTTONDOWN && ev.button.button == SDL_BUTTON_LEFT) {
+                SDL_Rect mouse_rect = { ev.button.x, ev.button.y, 1, 1 };
+                SDL_Rect text_rect = { x_offset, y_offset, m_width, m_height };
+                SDL_Rect result;
+                if(SDL_IntersectRect(&mouse_rect, &text_rect, &result) == SDL_TRUE) {
+                    callback(m_game_scene, *this);
+                }
+            }
         }
     }
 }
