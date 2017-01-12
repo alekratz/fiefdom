@@ -17,7 +17,8 @@ YesNoSubscene::YesNoSubscene(cstref prompt)
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         SDL_RenderFillRect(renderer, nullptr);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-        SDL_RenderDrawRect(renderer, nullptr);
+        SDL_Rect outline {1, 1, GAME_WIDTH - 2, GAME_HEIGHT - 2};
+        SDL_RenderDrawRect(renderer, &outline);
         SDL_SetRenderTarget(renderer, nullptr);
     }
 
