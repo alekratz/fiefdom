@@ -8,6 +8,14 @@ using namespace std;
 const auto DRAW_BOX_WIDTH = 360;
 const auto DRAW_BOX_HEIGHT = 240;
 
+/*
+    Pause subscene
+*/
+PauseSubscene::PauseSubscene() : m_done(false) { }
+
+/* 
+    YesNo subscene   
+*/
 YesNoSubscene::YesNoSubscene(cstref prompt)
     : Entity()
     , m_draw_box({CENTER(GAME_WIDTH, DRAW_BOX_WIDTH), CENTER(GAME_HEIGHT, DRAW_BOX_HEIGHT), 
@@ -77,3 +85,28 @@ void YesNoSubscene::update() {
         }
     }
 }
+
+
+void farm_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&);
+void cancel_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&);
+
+/*
+    Build subscene
+*/
+BuildSubscene::BuildSubscene()
+    : m_done(false)
+    , m_toolbar(*this, 23){ /* TODO : get rid of the magic number and base it off of toolbar dimensions */
+    m_toolbar.add_item("&farm", farm_callback);
+    m_toolbar.add_item("&cancel", cancel_callback);
+}
+
+void BuildSubscene::draw() {
+    m_toolbar.draw();
+}
+
+void BuildSubscene::update() {
+    m_toolbar.update();
+}
+
+void farm_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&) { }
+void cancel_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&) { }

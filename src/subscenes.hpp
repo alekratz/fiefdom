@@ -2,6 +2,7 @@
 #define FIEFDOM_SUBSCENES_HPP
 
 #include "types.hpp"
+#include "toolbar.hpp"
 #include <SDL.h>
 
 class GameScene;
@@ -9,15 +10,31 @@ class GameScene;
 template<typename T>
 using Subscene_ptr = uptr<T>;
 
+/**
+ * PauseSubscene
+ * Pauses the game. Unpauses when the "pause" key is hit.
+ */
 class PauseSubscene : public Entity {
     using this_t = PauseSubscene;
 public:
     PauseSubscene();
     ~PauseSubscene() = default;
-private:
 
+public:
+    virtual void draw() override { } /* TODO : draw pause screen */
+    virtual void update() override { } /* TODO : wait for pause hotkey */
+
+    bool done() { return m_done; }
+    void reset() { m_done = false; }
+
+private:
+    bool m_done;
 };
 
+/**
+ * YesNoSubscene
+ * Creates a yes/no window for the user to answer
+ */
 class YesNoSubscene : public Entity {
     using this_t = YesNoSubscene;
 public:
@@ -41,6 +58,30 @@ private:
     bool m_done;
 };
 
-using YesNoSubscene_p = Subscene_ptr<YesNoSubscene>;
+/**
+ * BuildSubscene
+ * Lets the user build shit.
+ */
+class BuildSubscene : public Entity {
+    using this_t = BuildSubscene;
+public:
+    BuildSubscene();
+    ~BuildSubscene() = default;
+
+public:
+    virtual void draw() override;
+    virtual void update() override;
+
+    bool done() { return m_done; }
+    void reset() { m_done = false; }
+
+private:
+    bool m_done;
+    Toolbar<this_t> m_toolbar;
+
+private:
+    friend void farm_callback(GameScene&, ToolbarItem<this_t>&);
+    friend void cancel_callback(GameScene&, ToolbarItem<this_t>&);
+};
 
 #endif //FIEFDOM_SUBSCENES_HPP

@@ -20,7 +20,6 @@ class GameScene : public Entity, Loggable {
 /* typedefs */
     using this_t = GameScene;
     using base_t = Entity;
-
 /* ctor/dtor */
 public:
     GameScene(bool& running);
@@ -37,12 +36,12 @@ public:
 private:
     bool& m_running;
     GameGrid_p m_game_grid;
-    Toolbar_p m_toolbar;
+    Toolbar<this_t> m_toolbar;
     vec<Serf_p> m_serfs;
     int32_t m_money;
     int32_t m_month;
     int32_t m_day;
-    Entity_p m_building_subscene;
+    BuildSubscene m_building_subscene;
     YesNoSubscene m_quit_subscene;
 /* Friends */
 private:
@@ -56,8 +55,8 @@ private:
     a singleton), we can just as easily violate these rules with the compiler being completely unaware that we did that,
     and that's not good eats.
     */
-    friend void building_mode_callback(GameScene&, ToolbarItem&);
-    friend void quit_callback(GameScene&, ToolbarItem&);
+    friend void building_mode_callback(GameScene&, ToolbarItem<this_t>&);
+    friend void quit_callback(GameScene&, ToolbarItem<this_t>&);
 };
 
 using GameScene_p = uptr<GameScene>;

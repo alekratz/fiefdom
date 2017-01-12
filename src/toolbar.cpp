@@ -11,17 +11,23 @@ constexpr auto TOOLBAR_ITEM_HPADDING = 13;
 //const SDL_Color WHITE { 255, 255, 255, SDL_ALPHA_OPAQUE };
 // const SDL_Color BLACK { 0, 0, 0, SDL_ALPHA_OPAQUE };
 
-Toolbar::Toolbar(GameScene& game_scene) : m_game_scene(game_scene) { }
+template<typename CallbackT>
+Toolbar<CallbackT>::Toolbar(CallbackT& game_state, int32_t y_offset) 
+    : m_game_state(game_state)
+    , m_x_offset(TOOLBAR_ITEM_HPADDING)
+    , m_y_offset(y_offset) { }
 
-void Toolbar::untoggle_all() {
+template<typename CallbackT>
+void Toolbar<CallbackT>::untoggle_all() {
     for(auto& t : m_items) {
         t->toggled = false;
     }
 }
 
-void Toolbar::draw() {
+template<typename CallbackT>
+void Toolbar<CallbackT>::draw() {
     // Base toolbar
-    SDL_Rect bar { -1, -1, GAME_WIDTH + 2, TOOLBAR_HEIGHT };
+    SDL_Rect bar { -1, -1 + m_y_offset, GAME_WIDTH + 2, TOOLBAR_HEIGHT };
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(renderer, &bar);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -33,21 +39,23 @@ void Toolbar::draw() {
     }
 }
 
-void Toolbar::update() {
+template<typename CallbackT>
+void Toolbar<CallbackT>::update() {
 
     for(auto& t : m_items) {
         t->update();
     }
 }
 
-void Toolbar::add_item(cstref text, Callback_t callback) {
-    static auto x_offset = TOOLBAR_ITEM_HPADDING;
-    auto new_item = std::make_unique<ToolbarItem>(m_game_scene, x_offset, TOOLBAR_ITEM_VPADDING, text, callback);
-    x_offset += new_item->get_width() + TOOLBAR_ITEM_HPADDING;
+template<typename CallbackT>
+void Toolbar<CallbackT>::add_item(cstref text, Callback_t callback) {
+    auto new_item = std::make_unique<ToolbarItem<CallbackT>>(m_game_state, m_x_offset, TOOLBAR_ITEM_VPADDING + m_y_offset, text, callback);
+    m_x_offset += new_item->get_width() + TOOLBAR_ITEM_HPADDING;
     m_items.push_back(std::move(new_item));
 }
 
-ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offset, cstref name, Toolbar::Callback_t callback)
+template<typename CallbackT>
+ToolbarItem<CallbackT>::ToolbarItem(CallbackT& game_state, int32_t x_offset, int32_t y_offset, cstref name, typename Toolbar<CallbackT>::Callback_t callback)
     : Loggable("ToolbarItem")
     , name(name)
     , callback(callback)
@@ -55,7 +63,7 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
     , toggled(false)
     , x_offset(x_offset)
     , y_offset(y_offset)
-    , m_game_scene(game_scene)
+    , m_game_state(game_state)
     , m_normal_texture(nullptr)
     , m_toggled_texture(nullptr) {
 
@@ -147,19 +155,22 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
     SDL_SetRenderTarget(renderer, nullptr);
 }
 
-ToolbarItem::~ToolbarItem() {
+template<typename CallbackT>
+ToolbarItem<CallbackT>::~ToolbarItem() {
     SDL_DestroyTexture(m_normal_texture);
     SDL_DestroyTexture(m_toggled_texture);
 }
 
-void ToolbarItem::draw() {
+template<typename CallbackT>
+void ToolbarItem<CallbackT>::draw() {
     SDL_SetRenderTarget(renderer, nullptr);
     auto texture = toggled ? m_toggled_texture : m_normal_texture;
     SDL_Rect rect { x_offset, y_offset, m_width, m_height };
     SDL_RenderCopy(renderer, texture, nullptr, &rect);
 }
 
-void ToolbarItem::update() {
+template<typename CallbackT>
+void ToolbarItem<CallbackT>::update() {
     if(hotkey != 0) {
         constexpr auto EVENT_SZ = 128; // arbitrary event size
         static SDL_Event evs[EVENT_SZ]; 
@@ -167,13 +178,13 @@ void ToolbarItem::update() {
         for(int i = 0; i < count; i++) {
             auto ev = evs[i];
             if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == hotkey && !ev.key.repeat)
-                callback(m_game_scene, *this);
+                callback(m_game_state, *this);
             else if(ev.type == SDL_MOUSEBUTTONDOWN && ev.button.button == SDL_BUTTON_LEFT) {
                 SDL_Rect mouse_rect = { ev.button.x, ev.button.y, 1, 1 };
                 SDL_Rect text_rect = { x_offset, y_offset, m_width, m_height };
                 SDL_Rect result;
                 if(SDL_IntersectRect(&mouse_rect, &text_rect, &result) == SDL_TRUE) {
-                    callback(m_game_scene, *this);
+                    callback(m_game_state, *this);
                 }
             }
         }

@@ -6,18 +6,22 @@
 #include <functional>
 #include <SDL.h>
 
-class GameScene;
+//class GameScene;
 
-struct ToolbarItem;
-using ToolbarItem_p = uptr<ToolbarItem>;
+template<typename CallbackT>
+class ToolbarItem;
+template<typename CallbackT>
+using ToolbarItem_p = uptr<ToolbarItem<CallbackT>>;
 
+template<typename CallbackT>
 class Toolbar : public Entity {
     using this_t = Toolbar;
     using base_t = Entity;
 public:
-    using Callback_t = std::function<void(GameScene&, ToolbarItem&)>;
+    using Callback_t = std::function<void(CallbackT&, ToolbarItem<CallbackT>&)>;
+
 public:
-    Toolbar(GameScene& game_scene);
+    Toolbar(CallbackT& game_state, int32_t y_offset=0);
     ~Toolbar() = default;
 
 public:
@@ -31,16 +35,20 @@ public:
      */
     void add_item(cstref text, Callback_t callback);
 private:
-    GameScene& m_game_scene;
+    CallbackT& m_game_state;
     //std::unordered_map<char, ToolbarItem_p> m_hotkey_items;
-    vec<ToolbarItem_p> m_items;
+    vec<ToolbarItem_p<CallbackT>> m_items;
+    int32_t m_x_offset;
+    int32_t m_y_offset;
 };
 
-using Toolbar_p = uptr<Toolbar>;
+template<typename CallbackT>
+using Toolbar_p = uptr<Toolbar<CallbackT>>;
 
+template<typename CallbackT>
 class ToolbarItem : public Entity, Loggable {
 public:
-    ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offset, cstref name, Toolbar::Callback_t callback);
+    ToolbarItem(CallbackT& game_scene, int32_t x_offset, int32_t y_offset, cstref name, typename Toolbar<CallbackT>::Callback_t callback);
     virtual ~ToolbarItem();
 
 public:
@@ -57,7 +65,7 @@ public:
     /** The text displayed by the toolbar item */
     str name;
     /** The function to call when this toolbar item is activated */
-    Toolbar::Callback_t callback;
+    typename Toolbar<CallbackT>::Callback_t callback;
     /** The hotkey for activation, determined by the name */
     char hotkey;
 
@@ -65,11 +73,17 @@ public:
 private:
     int32_t m_width, m_height;
     int32_t x_offset, y_offset;
-    GameScene& m_game_scene;
+    CallbackT& m_game_state;
 
 public:
     SDL_Texture* m_normal_texture;
     SDL_Texture* m_toggled_texture;
 };
 
+class GameScene;
+template class Toolbar<GameScene>;
+template class ToolbarItem<GameScene>;
+class BuildSubscene;
+template class Toolbar<BuildSubscene>;
+template class ToolbarItem<BuildSubscene>;
 #endif
