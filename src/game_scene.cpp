@@ -91,7 +91,9 @@ void building_mode_callback(GameScene& scene, ToolbarItem& item) {
 
 void quit_callback(GameScene& game_scene, ToolbarItem& item) {
     // at this point the quit callback does the equivalent of saying "I'M TELLING MY DAD ON YOU!"
-    item.toggled = true;
-    game_scene.m_quit_subscene = std::make_unique<YesNoSubscene>();
-
+    if(game_scene.mode != GameMode::Quitting) {
+        item.toggled = true;
+        game_scene.m_quit_subscene = std::make_unique<YesNoSubscene>("Are you sure you want to quit?");
+        game_scene.mode = GameMode::Quitting;
+    }
 }

@@ -30,7 +30,7 @@ private:
 class YesNoSubscene : public Subscene {
     using this_t = YesNoSubscene;
 public:
-    YesNoSubscene();
+    YesNoSubscene(cstref prompt);
     ~YesNoSubscene();
 public:
     virtual void draw() override;

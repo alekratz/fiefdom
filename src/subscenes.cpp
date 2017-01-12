@@ -5,7 +5,7 @@
 const auto DRAW_BOX_WIDTH = 360;
 const auto DRAW_BOX_HEIGHT = 240;
 
-YesNoSubscene::YesNoSubscene()
+YesNoSubscene::YesNoSubscene(cstref prompt)
     : Subscene()
     , m_draw_box({CENTER(GAME_WIDTH, DRAW_BOX_WIDTH), CENTER(GAME_HEIGHT, DRAW_BOX_HEIGHT), 
             DRAW_BOX_WIDTH, DRAW_BOX_HEIGHT}) {
