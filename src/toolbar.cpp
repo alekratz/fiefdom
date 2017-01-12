@@ -8,8 +8,8 @@
 constexpr auto TOOLBAR_HEIGHT = 23;
 constexpr auto TOOLBAR_ITEM_VPADDING = 3;
 constexpr auto TOOLBAR_ITEM_HPADDING = 13;
-const SDL_Color WHITE { 255, 255, 255, SDL_ALPHA_OPAQUE };
-const SDL_Color BLACK { 0, 0, 0, SDL_ALPHA_OPAQUE };
+//const SDL_Color WHITE { 255, 255, 255, SDL_ALPHA_OPAQUE };
+// const SDL_Color BLACK { 0, 0, 0, SDL_ALPHA_OPAQUE };
 
 Toolbar::Toolbar(GameScene& game_scene) : m_game_scene(game_scene) { }
 
@@ -100,7 +100,7 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
         draw_rect.x = pre_width;
         draw_rect.w = hotkey_w;
         draw_rect.h = m_height;
-        auto hotkey_surface = TTF_RenderText_Shaded(regular_font, (str() + hotkey).c_str(), WHITE, BLACK);
+        auto hotkey_surface = TTF_RenderText_Shaded(regular_font, (str() + hotkey).c_str(), WHITE_OPAQUE, BLACK_OPAQUE);
         auto hotkey_texture = SDL_CreateTextureFromSurface(renderer, hotkey_surface);
         SDL_RenderCopy(renderer, hotkey_texture, nullptr, &draw_rect);
         SDL_FreeSurface(hotkey_surface);
@@ -109,7 +109,7 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
         /* toggled texture */
         SDL_FreeSurface(text_surface);
         SDL_DestroyTexture(text_texture);
-        text_surface = TTF_RenderText_Shaded(regular_font, this->name.c_str(), WHITE, BLACK);
+        text_surface = TTF_RenderText_Shaded(regular_font, this->name.c_str(), WHITE_OPAQUE, BLACK_OPAQUE);
         SDL_SetRenderTarget(renderer, m_toggled_texture);
         SDL_RenderClear(renderer);
         text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
@@ -118,7 +118,7 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
         draw_rect.x = pre_width;
         draw_rect.w = hotkey_w;
         draw_rect.h = m_height;
-        hotkey_surface = TTF_RenderText_Shaded(regular_font, (str() + hotkey).c_str(), BLACK, WHITE);
+        hotkey_surface = TTF_RenderText_Shaded(regular_font, (str() + hotkey).c_str(), BLACK_OPAQUE, WHITE_OPAQUE);
         hotkey_texture = SDL_CreateTextureFromSurface(renderer, hotkey_surface);
         SDL_RenderCopy(renderer, hotkey_texture, nullptr, &draw_rect);
         SDL_FreeSurface(hotkey_surface);
@@ -133,7 +133,7 @@ ToolbarItem::ToolbarItem(GameScene& game_scene, int32_t x_offset, int32_t y_offs
         /* toggled texture */
         SDL_FreeSurface(text_surface);
         SDL_DestroyTexture(text_texture);
-        text_surface = TTF_RenderText_Shaded(regular_font, this->name.c_str(), WHITE, BLACK);
+        text_surface = TTF_RenderText_Shaded(regular_font, this->name.c_str(), WHITE_OPAQUE, BLACK_OPAQUE);
         text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
         SDL_Rect draw_rect { 0, 0, m_width, m_height };
         SDL_RenderCopy(renderer, text_texture, nullptr, &draw_rect);
