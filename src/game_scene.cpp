@@ -32,7 +32,6 @@ void GameScene::draw() {
     for(auto& s : m_serfs)
         s->draw();
     m_game_grid->draw();
-    
     m_toolbar->draw();
 
     /* Game-mode specific drawing */
@@ -54,7 +53,6 @@ void GameScene::draw() {
 
 void GameScene::update() {
     auto generic_update = [&]() {
-
         m_game_grid->update();
         for(auto& s : m_serfs)
             s->update();

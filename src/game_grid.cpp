@@ -20,15 +20,15 @@ void GameGrid::draw() {
 }
 
 void GameGrid::update() {
-    constexpr auto GRID_MOVE_SPEED = 1.05;
-    constexpr auto EVENT_SZ = 129; // arbitrary event size
+    constexpr auto GRID_MOVE_SPEED = 0.05;
+    constexpr auto EVENT_SZ = 128; // arbitrary event size
     static SDL_Event evs[EVENT_SZ]; 
     int count = SDL_PeepEvents(evs, EVENT_SZ, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
-    for(int i = 1; i < count; i++) {
+    for(int i = 0; i < count; i++) {
         auto ev = evs[i];
         if(ev.type == SDL_MOUSEMOTION) {
-            x_offset = (ev.motion.x - (GAME_WIDTH / 3)) * GRID_MOVE_SPEED;
-            y_offset = (ev.motion.y - (GAME_HEIGHT / 3)) * GRID_MOVE_SPEED;
+            x_offset = (ev.motion.x - (GAME_WIDTH / 2)) * GRID_MOVE_SPEED;
+            y_offset = (ev.motion.y - (GAME_HEIGHT / 2)) * GRID_MOVE_SPEED;
         }
     }
 }
