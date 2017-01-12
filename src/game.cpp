@@ -46,17 +46,6 @@ void Game::draw() {
 
 void Game::update() {
     SDL_PumpEvents();
-    constexpr auto EVENT_SZ = 128; // arbitrary event size
-    static SDL_Event evs[EVENT_SZ]; 
-    int count = SDL_PeepEvents(evs, EVENT_SZ, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
-    for(int i = 0; i < count; i++) {
-        auto ev = evs[i];
-        if(ev.type == SDL_QUIT)
-            m_is_running = false;
-        else if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_ESCAPE)
-            m_is_running = false;
-    }
-
     m_game_scene->update();
     SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 }
