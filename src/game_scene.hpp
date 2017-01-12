@@ -43,7 +43,7 @@ private:
     int32_t m_month;
     int32_t m_day;
     Entity_p m_building_subscene;
-    YesNoSubscene_p m_quit_subscene;
+    YesNoSubscene m_quit_subscene;
 /* Friends */
 private:
     /*

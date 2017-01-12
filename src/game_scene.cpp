@@ -21,7 +21,7 @@ GameScene::GameScene(bool& running)
     , m_month(3)
     , m_day(1)
     , m_building_subscene(nullptr)
-    , m_quit_subscene(nullptr) {
+    , m_quit_subscene("Are you sure you want to quit?") {
     m_serfs.push_back(std::make_unique<Serf>("Test", 0, 0));
     m_toolbar->add_item("&building", building_mode_callback);
     m_toolbar->add_item("&quit", quit_callback);
@@ -47,7 +47,7 @@ void GameScene::draw() {
         } break;
     case GameMode::Quitting:
         {
-            m_quit_subscene->draw();
+            m_quit_subscene.draw();
         } break;
     }
 }
@@ -73,12 +73,12 @@ void GameScene::update() {
         } break;
     case GameMode::Quitting:
         {
-            m_quit_subscene->update();
-            if(m_quit_subscene->done()) {
-                m_running = !m_quit_subscene->result();
+            m_quit_subscene.update();
+            if(m_quit_subscene.done()) {
+                m_running = !m_quit_subscene.result();
+                m_quit_subscene.reset();
                 mode = GameMode::None;
                 m_toolbar->untoggle_all();
-                m_quit_subscene = nullptr;
             }
         } break;
     }
@@ -100,7 +100,6 @@ void quit_callback(GameScene& game_scene, ToolbarItem& item) {
     // at this point the quit callback does the equivalent of saying "I'M TELLING MY DAD ON YOU!"
     if(game_scene.mode != GameMode::Quitting) {
         item.toggled = true;
-        game_scene.m_quit_subscene = std::make_unique<YesNoSubscene>("Are you sure you want to quit?");
         game_scene.mode = GameMode::Quitting;
     }
 }

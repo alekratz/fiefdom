@@ -29,10 +29,12 @@ public:
 
     bool result() { return m_result; }
     bool done() { return m_done; }
+    void reset() { m_done = false; }
 private:
-    str m_prompt;
     SDL_Rect m_draw_box;
     SDL_Texture* m_box_texture;
+    SDL_Rect m_text_center;
+    SDL_Texture* m_prompt_texture;
     bool m_result;
     bool m_done;
 };

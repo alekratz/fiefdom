@@ -17,7 +17,7 @@ extern TTF_Font* regular_font;
 // extern TTF_Font* bold_font;
 // extern TTF_Font* italic_font;
 
-#define WHITE_OPAQUE (Color { 255, 255, 255, 255 })
-#define BLACK_OPAQUE (Color { 0, 0, 0, 255 })
+#define WHITE_OPAQUE (SDL_Color { 255, 255, 255, 255 })
+#define BLACK_OPAQUE (SDL_Color { 0, 0, 0, 255 })
 
 #endif //FIEFDOM_GLOBALS_HPP
