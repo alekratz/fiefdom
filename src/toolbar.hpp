@@ -80,6 +80,7 @@ public:
     SDL_Texture* m_toggled_texture;
 };
 
+/* Forward declarations of toolbar and toolbaritem template classes */
 class GameScene;
 template class Toolbar<GameScene>;
 template class ToolbarItem<GameScene>;

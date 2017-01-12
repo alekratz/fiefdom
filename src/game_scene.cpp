@@ -67,6 +67,7 @@ void GameScene::update() {
         } break;
     case GameMode::Building:
         {
+            m_game_grid->update();
             m_building_subscene.update();
             if(m_building_subscene.done()) {
                 mode = GameMode::None;
@@ -100,7 +101,6 @@ void building_mode_callback(GameScene& scene, ToolbarItem<GameScene>& item) {
 }
 
 void quit_callback(GameScene& game_scene, ToolbarItem<GameScene>& item) {
-    // at this point the quit callback does the equivalent of saying "I'M TELLING MY DAD ON YOU!"
     if(game_scene.mode != GameMode::Quitting) {
         item.toggled = true;
         game_scene.mode = GameMode::Quitting;
