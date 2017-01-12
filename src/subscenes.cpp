@@ -21,6 +21,7 @@ YesNoSubscene::YesNoSubscene(cstref prompt)
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
         SDL_Rect outline {1, 1, GAME_WIDTH - 2, GAME_HEIGHT - 2};
         SDL_RenderDrawRect(renderer, &outline);
+        SDL_SetRenderTarget(renderer, nullptr);
 
         auto prompt_surface = TTF_RenderText_Shaded(regular_font, prompt.c_str(), BLACK_OPAQUE, WHITE_OPAQUE);
         assert(prompt_surface);
@@ -33,18 +34,31 @@ YesNoSubscene::YesNoSubscene(cstref prompt)
         m_text_center.y = CENTER(GAME_HEIGHT, m_text_center.h);
 
         SDL_FreeSurface(prompt_surface);
-        SDL_SetRenderTarget(renderer, nullptr);
+
+        auto yn_surface = TTF_RenderText_Shaded(regular_font, " Y / N ", WHITE_OPAQUE, BLACK_OPAQUE);
+        assert(yn_surface);
+        m_yn_texture = SDL_CreateTextureFromSurface(renderer, yn_surface);
+        assert(m_yn_texture);
+
+        m_yn_box.w = yn_surface->w;
+        m_yn_box.h = yn_surface->h;
+        m_yn_box.x = CENTER(GAME_WIDTH, m_yn_box.w);
+        m_yn_box.y = m_text_center.y + 30;
+
+        SDL_FreeSurface(yn_surface);
     }
 
 YesNoSubscene::~YesNoSubscene() {
     SDL_DestroyTexture(m_box_texture);
     SDL_DestroyTexture(m_prompt_texture);
+    SDL_DestroyTexture(m_yn_texture);
 }
 
 void YesNoSubscene::draw() { 
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_RenderCopy(renderer, m_box_texture, nullptr, &m_draw_box);
     SDL_RenderCopy(renderer, m_prompt_texture, nullptr, &m_text_center);
+    SDL_RenderCopy(renderer, m_yn_texture, nullptr, &m_yn_box);
 }
 
 void YesNoSubscene::update() { 

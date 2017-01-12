@@ -35,6 +35,8 @@ private:
     SDL_Texture* m_box_texture;
     SDL_Rect m_text_center;
     SDL_Texture* m_prompt_texture;
+    SDL_Rect m_yn_box;
+    SDL_Texture* m_yn_texture;
     bool m_result;
     bool m_done;
 };
