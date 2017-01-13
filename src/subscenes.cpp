@@ -123,13 +123,13 @@ void BuildSubscene::update() {
         } break;
     }
 
-    /* At any point, we can quit out of our current mode by pressing esc */
+    /* At any point, we can quit out of our current mode by pressing esc or c */
     constexpr auto EVENT_SZ = 128; // arbitrary event size
     static SDL_Event evs[EVENT_SZ]; 
     int count = SDL_PeepEvents(evs, EVENT_SZ, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
     for(int i = 0; i < count; i++) {
         auto ev = evs[i];
-        if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_ESCAPE) {
+        if(ev.type == SDL_KEYDOWN && (ev.key.keysym.sym == SDLK_ESCAPE || ev.key.keysym.sym == SDLK_c)) {
             switch(m_build_mode) {
                 case Building::None: {
                     m_done = true;
