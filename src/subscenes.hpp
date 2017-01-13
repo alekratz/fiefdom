@@ -73,8 +73,12 @@ public:
     virtual void draw() override;
     virtual void update() override;
 
-    bool done() { return m_done; }
-    void reset() { m_done = false; }
+    bool done() const { return m_done; }
+    void reset() { 
+        m_done = false;
+        m_build_mode = Building::None;
+        m_toolbar.untoggle_all();
+    }
 
 private:
     bool m_done;

@@ -1,8 +1,6 @@
 #include "game_grid.hpp"
 #include "globals.hpp"
 
-constexpr auto GRID_STEP = 32;
-
 GameGrid::GameGrid() { }
 
 GameGrid::~GameGrid() { }

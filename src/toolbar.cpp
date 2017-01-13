@@ -27,7 +27,7 @@ void Toolbar<CallbackT>::untoggle_all() {
 template<typename CallbackT>
 void Toolbar<CallbackT>::draw() {
     // Base toolbar
-    SDL_Rect bar { -1, -1 + m_y_offset, GAME_WIDTH + 2, TOOLBAR_HEIGHT };
+    SDL_Rect bar { -1, m_y_offset, GAME_WIDTH + 2, TOOLBAR_HEIGHT };
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(renderer, &bar);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -171,21 +171,19 @@ void ToolbarItem<CallbackT>::draw() {
 
 template<typename CallbackT>
 void ToolbarItem<CallbackT>::update() {
-    if(hotkey != 0) {
-        constexpr auto EVENT_SZ = 128; // arbitrary event size
-        static SDL_Event evs[EVENT_SZ]; 
-        int count = SDL_PeepEvents(evs, EVENT_SZ, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
-        for(int i = 0; i < count; i++) {
-            auto ev = evs[i];
-            if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == hotkey && !ev.key.repeat)
+    constexpr auto EVENT_SZ = 128; // arbitrary event size
+    static SDL_Event evs[EVENT_SZ]; 
+    int count = SDL_PeepEvents(evs, EVENT_SZ, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+    for(int i = 0; i < count; i++) {
+        auto ev = evs[i];
+        if(hotkey != 0 && ev.type == SDL_KEYDOWN && ev.key.keysym.sym == hotkey && !ev.key.repeat)
+            callback(m_game_state, *this);
+        else if(ev.type == SDL_MOUSEBUTTONDOWN && ev.button.button == SDL_BUTTON_LEFT) {
+            SDL_Rect mouse_rect = { ev.button.x, ev.button.y, 1, 1 };
+            SDL_Rect text_rect = { x_offset, y_offset, m_width, m_height };
+            SDL_Rect result;
+            if(SDL_IntersectRect(&mouse_rect, &text_rect, &result) == SDL_TRUE) {
                 callback(m_game_state, *this);
-            else if(ev.type == SDL_MOUSEBUTTONDOWN && ev.button.button == SDL_BUTTON_LEFT) {
-                SDL_Rect mouse_rect = { ev.button.x, ev.button.y, 1, 1 };
-                SDL_Rect text_rect = { x_offset, y_offset, m_width, m_height };
-                SDL_Rect result;
-                if(SDL_IntersectRect(&mouse_rect, &text_rect, &result) == SDL_TRUE) {
-                    callback(m_game_state, *this);
-                }
             }
         }
     }

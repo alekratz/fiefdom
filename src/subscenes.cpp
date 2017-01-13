@@ -119,14 +119,36 @@ void BuildSubscene::update() {
         } break;
         case Building::Farm: {
             /* Update farm drawing tools here */
+            
         } break;
     }
+
+    /* At any point, we can quit out of our current mode by pressing esc */
+    constexpr auto EVENT_SZ = 128; // arbitrary event size
+    static SDL_Event evs[EVENT_SZ]; 
+    int count = SDL_PeepEvents(evs, EVENT_SZ, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+    for(int i = 0; i < count; i++) {
+        auto ev = evs[i];
+        if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_ESCAPE) {
+            switch(m_build_mode) {
+                case Building::None: {
+                    m_done = true;
+                } break;
+                default: {
+                    m_toolbar.untoggle_all();
+                    m_build_mode = Building::None;
+                } break;
+            }
+        }
+    }
+    
 }
 
-void farm_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&) {
-
+void farm_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>& item) {
+    item.toggled = true;
+    subscene.m_build_mode = Building::Farm;
 }
+
 void cancel_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>&) {
     subscene.m_done = true;
 }
-

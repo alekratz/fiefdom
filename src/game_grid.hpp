@@ -1,6 +1,9 @@
 #ifndef FIEFDOM_GAME_GRID_HPP
 #define FIEFDOM_GAME_GRID_HPP
 
+#define GRID_STEP 32
+#define GRID_SNAP(x) ((((x) + (GRID_STEP / 2)) / GRID_STEP) * GRID_STEP)
+
 #include "types.hpp"
 #include <SDL.h>
 
