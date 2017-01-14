@@ -2,10 +2,16 @@
 #define FIEFDOM_GAME_GRID_HPP
 
 #define GRID_STEP 32
-#define GRID_SNAP(x) ((((x) + (GRID_STEP / 2)) / GRID_STEP) * GRID_STEP)
 
 #include "types.hpp"
 #include <SDL.h>
+
+/**
+ * Snaps a coordinate to the closest GRID_STEP multiple.
+ */
+inline int32_t grid_snap(int32_t in) {
+    return (in + GRID_STEP / 32) - (in % GRID_STEP);
+}
 
 class GameGrid : public Entity {
 private:

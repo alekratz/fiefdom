@@ -108,6 +108,7 @@ void BuildSubscene::draw() {
         } break;
         case Building::Farm: {
             /* Draw farm drawing tools here */
+            m_draw_tool.draw();
         } break;
     }
 }
@@ -119,7 +120,7 @@ void BuildSubscene::update() {
         } break;
         case Building::Farm: {
             /* Update farm drawing tools here */
-            
+            m_draw_tool.update();
         } break;
     }
 
@@ -147,6 +148,7 @@ void BuildSubscene::update() {
 void farm_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>& item) {
     item.toggled = true;
     subscene.m_build_mode = Building::Farm;
+    subscene.m_draw_tool.reset();
 }
 
 void cancel_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>&) {

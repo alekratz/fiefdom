@@ -1,6 +1,9 @@
 #include "game_grid.hpp"
 #include "globals.hpp"
 
+int32_t x_offset;
+int32_t y_offset;
+
 GameGrid::GameGrid() { }
 
 GameGrid::~GameGrid() { }

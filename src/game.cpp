@@ -6,9 +6,6 @@
 constexpr auto TARGET_FPS = 60;
 constexpr auto MS_PER_FRAME = 1000 / TARGET_FPS;
 
-int32_t x_offset = 0;
-int32_t y_offset = 0;
-
 Game::Game()
     : Loggable("game")
     , m_is_running(false)

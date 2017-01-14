@@ -3,6 +3,7 @@
 
 #include "types.hpp"
 #include "toolbar.hpp"
+#include "tools.hpp"
 #include "buildings.hpp"
 #include <SDL.h>
 
@@ -84,6 +85,7 @@ private:
     bool m_done;
     Toolbar<this_t> m_toolbar;
     Building m_build_mode;
+    DrawTool m_draw_tool;
 
 private:
     /*

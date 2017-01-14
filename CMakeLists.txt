@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "-g -pedantic -Wall -Wextra -O2")
 
 # Source and executable
-set(SOURCE_FILES src/main.cpp src/game.cpp src/game_scene.cpp src/serf.cpp src/game_grid.cpp src/buildings.cpp src/toolbar.cpp src/subscenes.cpp)
+set(SOURCE_FILES 
+    src/main.cpp src/game.cpp src/game_scene.cpp src/serf.cpp src/game_grid.cpp
+    src/buildings.cpp src/toolbar.cpp src/subscenes.cpp src/tools.cpp)
 add_executable(fiefdom ${SOURCE_FILES})
 
 # CMake modules
