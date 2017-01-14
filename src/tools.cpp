@@ -25,7 +25,7 @@ DrawTool::DrawTool()
 }
 
 DrawTool::~DrawTool() {
-
+    SDL_DestroyTexture(m_point);
 }
 
 void DrawTool::reset() {
@@ -42,6 +42,14 @@ void DrawTool::draw() {
 
     if (started) {
         // clicked once; waiting to create a new side
+        SDL_SetRenderDrawColor(renderer, 100, 128, 255, 128);
+        SDL_Rect outline {
+            x_start + x_offset + (POINT_W / 2),
+            y_start + y_offset + (POINT_H / 2),
+            x_end - x_start - 1,
+            y_end - y_start - 1,
+        };
+        SDL_RenderDrawRect(renderer, &outline);
         SDL_Rect end_rect { x_end + x_offset, y_end + y_offset, POINT_W, POINT_H };
         SDL_Rect aux_rect1 { x_start + x_offset, y_end + y_offset, POINT_W, POINT_H };
         SDL_Rect aux_rect2 { x_end + x_offset, y_start + y_offset, POINT_W, POINT_H };
