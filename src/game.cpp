@@ -26,7 +26,6 @@ void Game::start() {
         draw();
         end = SDL_GetTicks();
         delta = end - start;
-        //m_logger->debug("{} ms", delta);
         if(delta < MS_PER_FRAME) {
             SDL_Delay(MS_PER_FRAME - delta);
         }

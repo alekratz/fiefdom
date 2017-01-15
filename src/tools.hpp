@@ -19,6 +19,7 @@ public:
 
 public:
     bool done() const { return m_done; }
+    bool valid() const { return m_valid; }
     void reset();
 
 public:
@@ -32,6 +33,7 @@ public:
 
 private:
     bool m_done;
+    bool m_valid;
     SDL_Texture* m_cost_texture;
     SDL_Texture* m_size_texture;
 };

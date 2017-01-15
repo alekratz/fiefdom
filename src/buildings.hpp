@@ -14,7 +14,7 @@ class Farm : public Entity {
     using base_t = Entity;
 public:
     Farm(const SDL_Rect& dims);
-    ~Farm() = default;
+    ~Farm();
 
 public:
     virtual void draw() override;
@@ -23,6 +23,9 @@ public:
 public:
     SDL_Rect dims;
     double yield_per_area;
+
+private:
+    SDL_Texture* m_text_texture;
 };
 
 using Farm_p = Entity_ptr<Farm>;

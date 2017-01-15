@@ -7,7 +7,6 @@
 #include <SDL.h>
 #include <spdlog/fmt/fmt.h>
 
-
 const SDL_Color TEXT_FG = BLACK_OPAQUE;
 const SDL_Color TEXT_BG { 128, 128, 128, 128 };
 
@@ -45,19 +44,7 @@ void DrawTool::reset() {
 
 void DrawTool::draw() {
     SDL_SetRenderDrawColor(renderer, 100, 128, 255, 128);
-    bool valid = true;
-    if(started) {
-        if(w_min > 0 && ((x_end - x_start) < w_min))
-            valid = false;
-        else if(w_max > 0 && ((x_end - x_start) > w_max))
-            valid = false;
-        else if(h_min > 0 && ((y_end - y_start) < h_min))
-            valid = false;
-        else if(h_max > 0 && ((y_end - y_start) > h_max))
-            valid = false;
-    }
-
-    if(!valid){
+    if(!m_valid){
         SDL_SetRenderDrawColor(renderer, 214, 50, 48, 128);
     }
 
@@ -86,7 +73,12 @@ void DrawTool::draw() {
         if(m_cost_texture != nullptr) {
             int32_t text_w, text_h;
             SDL_QueryTexture(m_cost_texture, nullptr, nullptr, &text_w, &text_h);
-            SDL_Rect draw_rect { x_offset + x_start + CENTER(x_end - x_start, text_w), y_offset + y_start + text_h + CENTER(y_end - y_start, text_h), text_w, text_h };
+            SDL_Rect draw_rect {
+                x_offset + x_start + CENTER(x_end - x_start, text_w),
+                y_offset + y_start + text_h + CENTER(y_end - y_start, text_h),
+                text_w,
+                text_h
+            };
             SDL_RenderCopy(renderer, m_cost_texture, nullptr, &draw_rect);
         }
         if(m_size_texture != nullptr) {
@@ -103,6 +95,7 @@ void DrawTool::update() {
     mouse_x = mouse_y = -1;
     bool mouse_down = false;
     bool mouse_motion = false;
+    m_valid = true;
 
     constexpr auto EVENT_SZ = 128; // arbitrary event size
     static SDL_Event evs[EVENT_SZ]; 
@@ -121,7 +114,6 @@ void DrawTool::update() {
             break;
         }
     }
-
     /*
         Start/end point placement
     */
@@ -135,14 +127,24 @@ void DrawTool::update() {
             started = true;
     }
     else if(!ended) {
+        double cost = (((x_end - x_start) / GRID_STEP * (y_end - y_start) / GRID_STEP)) * cost_per_unit;
+        if(w_min > 0 && ((x_end - x_start) < w_min))
+            m_valid = false;
+        else if(w_max > 0 && ((x_end - x_start) > w_max))
+            m_valid = false;
+        else if(h_min > 0 && ((y_end - y_start) < h_min))
+            m_valid = false;
+        else if(h_max > 0 && ((y_end - y_start) > h_max))
+            m_valid = false;
+        else if(cost_per_unit != 0.0 && cost_max != 0.0 && cost > cost_max)
+            m_valid = false;
+
         // clicked once; waiting to create a new side
         if(mouse_motion) {
             x_end = grid_snap(mouse_x + (GRID_STEP / 2)) - (TOOL_POINT_W / 2);
             y_end = grid_snap(mouse_y + (GRID_STEP / 2)) - (TOOL_POINT_H / 2);
         }
-        if(mouse_down)
-            ended = true;
-        
+
         /*
             Text position calculations
         */
@@ -164,11 +166,13 @@ void DrawTool::update() {
                 m_cost_texture = nullptr;
             }
             assert(m_cost_texture == nullptr);
-            double cost = ((abs(x_end - x_start) / GRID_STEP * abs(y_end - y_start) / GRID_STEP)) * cost_per_unit;
             auto cost_str = fmt::format("{} " CURRENCY, cost);
             auto cost_surface = TTF_RenderText_Shaded(regular_font, cost_str.c_str(), TEXT_FG, TEXT_BG);
             m_cost_texture = SDL_CreateTextureFromSurface(renderer, cost_surface);
         }
+
+        if(mouse_down && m_valid)
+            ended = true;
     }
     else {
         m_done = true;
