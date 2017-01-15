@@ -4,6 +4,9 @@
 #include "types.hpp"
 #include <SDL.h>
 
+#define TOOL_POINT_W 10
+#define TOOL_POINT_H 10
+
 class DrawTool : public Entity {
     using this_t = DrawTool;
 public:
@@ -25,6 +28,7 @@ public:
     int32_t w_min, h_min;
     int32_t w_max, h_max;
     double cost_per_unit;
+    double cost_max;
 
 private:
     bool m_done;

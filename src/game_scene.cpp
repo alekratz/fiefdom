@@ -20,7 +20,7 @@ GameScene::GameScene(bool& running)
     , m_money(START_MONEY)
     , m_month(3)
     , m_day(1)
-    , m_building_subscene()
+    , m_building_subscene(m_buildings)
     , m_quit_subscene("Are you sure you want to quit?") {
     m_serfs.push_back(std::make_unique<Serf>("Test", 0, 0));
     m_toolbar.add_item("&building", building_mode_callback);
@@ -30,6 +30,8 @@ GameScene::GameScene(bool& running)
 
 void GameScene::draw() {
     SDL_SetRenderTarget(renderer, nullptr);
+    for(auto& b : m_buildings)
+        b->draw();
     for(auto& s : m_serfs)
         s->draw();
     m_game_grid->draw();
@@ -55,6 +57,8 @@ void GameScene::draw() {
 void GameScene::update() {
     auto generic_update = [&]() {
         m_game_grid->update();
+        for(auto& b : m_buildings)
+            b->update();
         for(auto& s : m_serfs)
             s->update();
         m_toolbar.update();

@@ -38,6 +38,7 @@ private:
     GameGrid_p m_game_grid;
     Toolbar<this_t> m_toolbar;
     vec<Serf_p> m_serfs;
+    vec<Entity_p> m_buildings;
     int32_t m_money;
     int32_t m_month;
     int32_t m_day;

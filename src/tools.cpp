@@ -7,18 +7,17 @@
 #include <SDL.h>
 #include <spdlog/fmt/fmt.h>
 
-constexpr auto POINT_W = 10;
-constexpr auto POINT_H = 10;
+
 const SDL_Color TEXT_FG = BLACK_OPAQUE;
 const SDL_Color TEXT_BG { 128, 128, 128, 128 };
 
-// TODO : all x_end - x_start and y_end - y_start need to be wrapped with absl(), because they need to be magnitudes.
+// TODO : all x_end - x_start and y_end - y_start need to be wrapped with abs(), because they need to be magnitudes.
 
 DrawTool::DrawTool()
-    : x_start(-POINT_W)
-    , y_start(-POINT_H)
-    , x_end(-POINT_W)
-    , y_end(-POINT_H)
+    : x_start(-TOOL_POINT_W)
+    , y_start(-TOOL_POINT_H)
+    , x_end(-TOOL_POINT_W)
+    , y_end(-TOOL_POINT_H)
     , started(false) 
     , ended(false)
     , w_min(0), h_min(0)
@@ -32,11 +31,15 @@ DrawTool::~DrawTool() { }
 
 void DrawTool::reset() {
     started = ended = m_done = false;
-    x_start = x_end = -POINT_W;
-    y_start = y_end = -POINT_H;
+    x_start = x_end = -TOOL_POINT_W;
+    y_start = y_end = -TOOL_POINT_H;
     if(m_cost_texture != nullptr) {
         SDL_DestroyTexture(m_cost_texture);
         m_cost_texture = nullptr;
+    }
+    if(m_size_texture != nullptr) {
+        SDL_DestroyTexture(m_size_texture);
+        m_size_texture = nullptr;
     }
 }
 
@@ -59,23 +62,23 @@ void DrawTool::draw() {
     }
 
     SDL_SetRenderTarget(renderer, nullptr);
-    SDL_Rect start_rect { x_start + x_offset, y_start + y_offset, POINT_W, POINT_H };
+    SDL_Rect start_rect { x_start + x_offset, y_start + y_offset, TOOL_POINT_W, TOOL_POINT_H };
     SDL_RenderFillRect(renderer, &start_rect);
 
     if (started) {
         // clicked once; waiting to create a new side
         //SDL_SetRenderDrawColor(renderer, 100, 128, 255, 128);
         SDL_Rect outline {
-            x_start + x_offset + (POINT_W / 2),
-            y_start + y_offset + (POINT_H / 2),
+            x_start + x_offset + (TOOL_POINT_W / 2),
+            y_start + y_offset + (TOOL_POINT_H / 2),
             x_end - x_start - 1,
             y_end - y_start - 1,
         };
         SDL_RenderDrawRect(renderer, &outline);
         SDL_RenderFillRect(renderer, &outline);
-        SDL_Rect end_rect { x_end + x_offset, y_end + y_offset, POINT_W, POINT_H };
-        SDL_Rect aux_rect1 { x_start + x_offset, y_end + y_offset, POINT_W, POINT_H };
-        SDL_Rect aux_rect2 { x_end + x_offset, y_start + y_offset, POINT_W, POINT_H };
+        SDL_Rect end_rect { x_end + x_offset, y_end + y_offset, TOOL_POINT_W, TOOL_POINT_H };
+        SDL_Rect aux_rect1 { x_start + x_offset, y_end + y_offset, TOOL_POINT_W, TOOL_POINT_H };
+        SDL_Rect aux_rect2 { x_end + x_offset, y_start + y_offset, TOOL_POINT_W, TOOL_POINT_H };
         SDL_RenderFillRect(renderer, &end_rect);
         SDL_RenderFillRect(renderer, &aux_rect1);
         SDL_RenderFillRect(renderer, &aux_rect2);
@@ -125,8 +128,8 @@ void DrawTool::update() {
     if(!started) {
         // nothing clicked
         if(mouse_motion) {
-            x_start = grid_snap(mouse_x + (GRID_STEP / 2)) - (POINT_W / 2);
-            y_start = grid_snap(mouse_y + (GRID_STEP / 2)) - (POINT_H / 2);
+            x_start = grid_snap(mouse_x + (GRID_STEP / 2)) - (TOOL_POINT_W / 2);
+            y_start = grid_snap(mouse_y + (GRID_STEP / 2)) - (TOOL_POINT_H / 2);
         }
         if(mouse_down)
             started = true;
@@ -134,8 +137,8 @@ void DrawTool::update() {
     else if(!ended) {
         // clicked once; waiting to create a new side
         if(mouse_motion) {
-            x_end = grid_snap(mouse_x + (GRID_STEP / 2)) - (POINT_W / 2);
-            y_end = grid_snap(mouse_y + (GRID_STEP / 2)) - (POINT_H / 2);
+            x_end = grid_snap(mouse_x + (GRID_STEP / 2)) - (TOOL_POINT_W / 2);
+            y_end = grid_snap(mouse_y + (GRID_STEP / 2)) - (TOOL_POINT_H / 2);
         }
         if(mouse_down)
             ended = true;

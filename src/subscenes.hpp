@@ -67,7 +67,7 @@ private:
 class BuildSubscene : public Entity {
     using this_t = BuildSubscene;
 public:
-    BuildSubscene();
+    BuildSubscene(vec<Entity_p>& buildings);
     ~BuildSubscene() = default;
 
 public:
@@ -86,6 +86,7 @@ private:
     Toolbar<this_t> m_toolbar;
     BuildingType m_build_mode;
     DrawTool m_draw_tool;
+    vec<Entity_p>& m_buildings;
 
 private:
     /*

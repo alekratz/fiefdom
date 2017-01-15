@@ -21,11 +21,14 @@ using wptr = std::weak_ptr<T>;
 /**
  * Game types
  */
+template<typename T>
+using Entity_ptr = uptr<T>;
+
 class Entity {
 public:
     virtual void draw() = 0;
     virtual void update() = 0;
 };
-using Entity_p = uptr<Entity>;
+using Entity_p = Entity_ptr<Entity>;
 
 #endif //FIEFDOM_TYPES_HPP

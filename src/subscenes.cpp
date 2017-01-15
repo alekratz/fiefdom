@@ -94,10 +94,11 @@ void cancel_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&);
 /*
     Build subscene
 */
-BuildSubscene::BuildSubscene()
+BuildSubscene::BuildSubscene(vec<Entity_p>& buildings)
     : m_done(false)
     , m_toolbar(*this, 23) /* TODO : get rid of the magic number and base it off of toolbar dimensions */
-    , m_build_mode(BuildingType::None) {
+    , m_build_mode(BuildingType::None)
+    , m_buildings(buildings) {
     m_toolbar.add_item("&farm", farm_callback);
     m_toolbar.add_item("&cancel", cancel_callback);
 }
@@ -122,6 +123,16 @@ void BuildSubscene::update() {
         case BuildingType::Farm: {
             /* Update farm drawing tools here */
             m_draw_tool.update();
+            if(m_draw_tool.done()) {
+                m_build_mode = BuildingType::None;
+                SDL_Rect dims {
+                    m_draw_tool.x_start + (TOOL_POINT_W / 2),
+                    m_draw_tool.y_start + (TOOL_POINT_H / 2),
+                    m_draw_tool.x_end - m_draw_tool.x_start,
+                    m_draw_tool.y_end - m_draw_tool.y_start,
+                };
+                m_buildings.push_back(std::make_unique<Farm>(dims));
+            }
         } break;
     }
 

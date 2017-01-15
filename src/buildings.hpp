@@ -25,4 +25,6 @@ public:
     double yield_per_area;
 };
 
+using Farm_p = Entity_ptr<Farm>;
+
 #endif //FIEFDOM_BUILDINGS_HPP
