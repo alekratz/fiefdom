@@ -4,7 +4,7 @@
 #include "types.hpp"
 #include <spdlog/spdlog.h>
 
-#define CENTER(a, b) ((a - b) / 2)
+#define CENTER(a, b) (((a) - (b)) / 2)
 
 struct Loggable {
     Loggable(cstref name) {

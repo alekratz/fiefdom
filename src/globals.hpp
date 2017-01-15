@@ -12,6 +12,7 @@ extern int32_t y_offset;
 
 #define GAME_WIDTH 1024
 #define GAME_HEIGHT 768
+#define CURRENCY "schmeckles"
 
 extern TTF_Font* regular_font;
 // extern TTF_Font* bold_font;

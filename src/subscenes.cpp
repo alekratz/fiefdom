@@ -152,6 +152,7 @@ void farm_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>& item) {
     subscene.m_draw_tool.reset();
     subscene.m_draw_tool.w_min = subscene.m_draw_tool.h_min = 2 * GRID_STEP;
     subscene.m_draw_tool.w_max = subscene.m_draw_tool.h_max = 6 * GRID_STEP;
+    subscene.m_draw_tool.cost_per_unit = 0.5;
 }
 
 void cancel_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>&) {

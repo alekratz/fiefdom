@@ -1,11 +1,18 @@
 #include "tools.hpp"
 #include "globals.hpp"
 #include "game_grid.hpp"
+#include "util.hpp"
 #include <cassert>
+#include <cmath>
 #include <SDL.h>
+#include <spdlog/fmt/fmt.h>
 
 constexpr auto POINT_W = 10;
 constexpr auto POINT_H = 10;
+const SDL_Color TEXT_FG = BLACK_OPAQUE;
+const SDL_Color TEXT_BG { 128, 128, 128, 128 };
+
+// TODO : all x_end - x_start and y_end - y_start need to be wrapped with absl(), because they need to be magnitudes.
 
 DrawTool::DrawTool()
     : x_start(-POINT_W)
@@ -17,7 +24,9 @@ DrawTool::DrawTool()
     , w_min(0), h_min(0)
     , w_max(0), h_max(0)
     , cost_per_unit(0.0)
-    , m_done(false) { }
+    , m_done(false)
+    , m_cost_texture(nullptr)
+    , m_size_texture(nullptr) { }
 
 DrawTool::~DrawTool() { }
 
@@ -25,6 +34,10 @@ void DrawTool::reset() {
     started = ended = m_done = false;
     x_start = x_end = -POINT_W;
     y_start = y_end = -POINT_H;
+    if(m_cost_texture != nullptr) {
+        SDL_DestroyTexture(m_cost_texture);
+        m_cost_texture = nullptr;
+    }
 }
 
 void DrawTool::draw() {
@@ -66,6 +79,19 @@ void DrawTool::draw() {
         SDL_RenderFillRect(renderer, &end_rect);
         SDL_RenderFillRect(renderer, &aux_rect1);
         SDL_RenderFillRect(renderer, &aux_rect2);
+
+        if(m_cost_texture != nullptr) {
+            int32_t text_w, text_h;
+            SDL_QueryTexture(m_cost_texture, nullptr, nullptr, &text_w, &text_h);
+            SDL_Rect draw_rect { x_offset + x_start + CENTER(x_end - x_start, text_w), y_offset + y_start + text_h + CENTER(y_end - y_start, text_h), text_w, text_h };
+            SDL_RenderCopy(renderer, m_cost_texture, nullptr, &draw_rect);
+        }
+        if(m_size_texture != nullptr) {
+            int32_t text_w, text_h;
+            SDL_QueryTexture(m_size_texture, nullptr, nullptr, &text_w, &text_h);
+            SDL_Rect draw_rect { x_offset + x_start + CENTER(x_end - x_start, text_w), y_offset + y_start + CENTER(y_end - y_start, text_h), text_w, text_h };
+            SDL_RenderCopy(renderer, m_size_texture, nullptr, &draw_rect);
+        }
     }
 }
 
@@ -93,7 +119,9 @@ void DrawTool::update() {
         }
     }
 
-    SDL_SetRenderTarget(renderer, nullptr);
+    /*
+        Start/end point placement
+    */
     if(!started) {
         // nothing clicked
         if(mouse_motion) {
@@ -111,6 +139,33 @@ void DrawTool::update() {
         }
         if(mouse_down)
             ended = true;
+        
+        /*
+            Text position calculations
+        */
+        if(mouse_motion) {
+            if(m_size_texture != nullptr) {
+                SDL_DestroyTexture(m_size_texture);
+                m_size_texture = nullptr;
+            }
+            assert(m_size_texture == nullptr);
+            auto size_str = fmt::format("{} x {}", (x_end - x_start) / GRID_STEP, (y_end - y_start) / GRID_STEP);
+            auto size_surface = TTF_RenderText_Shaded(regular_font, size_str.c_str(), TEXT_FG, TEXT_BG);
+            m_size_texture = SDL_CreateTextureFromSurface(renderer, size_surface);
+        }
+
+        if(cost_per_unit != 0.0 && mouse_motion) {
+            // TODO : figure out how to speed this one up
+            if(m_cost_texture != nullptr) {
+                SDL_DestroyTexture(m_cost_texture);
+                m_cost_texture = nullptr;
+            }
+            assert(m_cost_texture == nullptr);
+            double cost = ((abs(x_end - x_start) / GRID_STEP * abs(y_end - y_start) / GRID_STEP)) * cost_per_unit;
+            auto cost_str = fmt::format("{} " CURRENCY, cost);
+            auto cost_surface = TTF_RenderText_Shaded(regular_font, cost_str.c_str(), TEXT_FG, TEXT_BG);
+            m_cost_texture = SDL_CreateTextureFromSurface(renderer, cost_surface);
+        }
     }
     else {
         m_done = true;

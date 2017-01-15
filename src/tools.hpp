@@ -28,6 +28,8 @@ public:
 
 private:
     bool m_done;
+    SDL_Texture* m_cost_texture;
+    SDL_Texture* m_size_texture;
 };
 
 #endif //FIEFDOM_TOOLS_HPP
