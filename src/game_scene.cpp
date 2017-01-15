@@ -33,7 +33,6 @@ void GameScene::draw() {
     for(auto& s : m_serfs)
         s->draw();
     m_game_grid->draw();
-    m_toolbar.draw();
 
     /* Game-mode specific drawing */
     switch(mode) {
@@ -50,6 +49,7 @@ void GameScene::draw() {
             m_quit_subscene.draw();
         } break;
     }
+    m_toolbar.draw();
 }
 
 void GameScene::update() {

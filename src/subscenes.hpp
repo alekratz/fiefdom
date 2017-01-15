@@ -77,14 +77,14 @@ public:
     bool done() const { return m_done; }
     void reset() { 
         m_done = false;
-        m_build_mode = Building::None;
+        m_build_mode = BuildingType::None;
         m_toolbar.untoggle_all();
     }
 
 private:
     bool m_done;
     Toolbar<this_t> m_toolbar;
-    Building m_build_mode;
+    BuildingType m_build_mode;
     DrawTool m_draw_tool;
 
 private:

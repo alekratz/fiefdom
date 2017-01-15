@@ -4,7 +4,7 @@
 #include "types.hpp"
 #include <SDL.h>
 
-enum class Building {
+enum class BuildingType {
     None,
     Farm,
 };

@@ -1,6 +1,7 @@
 #include "subscenes.hpp"
 #include "globals.hpp"
 #include "util.hpp"
+#include "game_grid.hpp"
 
 #include <iostream>
 using namespace std;
@@ -96,7 +97,7 @@ void cancel_callback(BuildSubscene&, ToolbarItem<BuildSubscene>&);
 BuildSubscene::BuildSubscene()
     : m_done(false)
     , m_toolbar(*this, 23) /* TODO : get rid of the magic number and base it off of toolbar dimensions */
-    , m_build_mode(Building::None) {
+    , m_build_mode(BuildingType::None) {
     m_toolbar.add_item("&farm", farm_callback);
     m_toolbar.add_item("&cancel", cancel_callback);
 }
@@ -104,9 +105,9 @@ BuildSubscene::BuildSubscene()
 void BuildSubscene::draw() {
     m_toolbar.draw();
     switch(m_build_mode) {
-        case Building::None: {
+        case BuildingType::None: {
         } break;
-        case Building::Farm: {
+        case BuildingType::Farm: {
             /* Draw farm drawing tools here */
             m_draw_tool.draw();
         } break;
@@ -115,10 +116,10 @@ void BuildSubscene::draw() {
 
 void BuildSubscene::update() {
     switch(m_build_mode) {
-        case Building::None: {
+        case BuildingType::None: {
             m_toolbar.update();
         } break;
-        case Building::Farm: {
+        case BuildingType::Farm: {
             /* Update farm drawing tools here */
             m_draw_tool.update();
         } break;
@@ -132,12 +133,12 @@ void BuildSubscene::update() {
         auto ev = evs[i];
         if(ev.type == SDL_KEYDOWN && (ev.key.keysym.sym == SDLK_ESCAPE || ev.key.keysym.sym == SDLK_c)) {
             switch(m_build_mode) {
-                case Building::None: {
+                case BuildingType::None: {
                     m_done = true;
                 } break;
                 default: {
                     m_toolbar.untoggle_all();
-                    m_build_mode = Building::None;
+                    m_build_mode = BuildingType::None;
                 } break;
             }
         }
@@ -147,8 +148,10 @@ void BuildSubscene::update() {
 
 void farm_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>& item) {
     item.toggled = true;
-    subscene.m_build_mode = Building::Farm;
+    subscene.m_build_mode = BuildingType::Farm;
     subscene.m_draw_tool.reset();
+    subscene.m_draw_tool.w_min = subscene.m_draw_tool.h_min = 2 * GRID_STEP;
+    subscene.m_draw_tool.w_max = subscene.m_draw_tool.h_max = 6 * GRID_STEP;
 }
 
 void cancel_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>&) {

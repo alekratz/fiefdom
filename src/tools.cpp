@@ -14,19 +14,12 @@ DrawTool::DrawTool()
     , y_end(-POINT_H)
     , started(false) 
     , ended(false)
-    , m_done(false)
-    , m_point(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET | SDL_TEXTUREACCESS_STATIC,
-                POINT_W, POINT_H)) {
-    assert(m_point);
-    SDL_SetRenderTarget(renderer, m_point);
-    SDL_SetRenderDrawColor(renderer, 100, 128, 255, 128);
-    SDL_RenderClear(renderer);
-    SDL_SetRenderTarget(renderer, nullptr);
-}
+    , w_min(0), h_min(0)
+    , w_max(0), h_max(0)
+    , cost_per_unit(0.0)
+    , m_done(false) { }
 
-DrawTool::~DrawTool() {
-    SDL_DestroyTexture(m_point);
-}
+DrawTool::~DrawTool() { }
 
 void DrawTool::reset() {
     started = ended = m_done = false;
@@ -35,14 +28,30 @@ void DrawTool::reset() {
 }
 
 void DrawTool::draw() {
-    //draw_rect.x = grid_snap
+    SDL_SetRenderDrawColor(renderer, 100, 128, 255, 128);
+    bool valid = true;
+    if(started) {
+        if(w_min > 0 && ((x_end - x_start) < w_min))
+            valid = false;
+        else if(w_max > 0 && ((x_end - x_start) > w_max))
+            valid = false;
+        else if(h_min > 0 && ((y_end - y_start) < h_min))
+            valid = false;
+        else if(h_max > 0 && ((y_end - y_start) > h_max))
+            valid = false;
+    }
+
+    if(!valid){
+        SDL_SetRenderDrawColor(renderer, 214, 50, 48, 128);
+    }
+
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_Rect start_rect { x_start + x_offset, y_start + y_offset, POINT_W, POINT_H };
-    SDL_RenderCopy(renderer, m_point, nullptr, &start_rect);
+    SDL_RenderFillRect(renderer, &start_rect);
 
     if (started) {
         // clicked once; waiting to create a new side
-        SDL_SetRenderDrawColor(renderer, 100, 128, 255, 128);
+        //SDL_SetRenderDrawColor(renderer, 100, 128, 255, 128);
         SDL_Rect outline {
             x_start + x_offset + (POINT_W / 2),
             y_start + y_offset + (POINT_H / 2),
@@ -50,12 +59,13 @@ void DrawTool::draw() {
             y_end - y_start - 1,
         };
         SDL_RenderDrawRect(renderer, &outline);
+        SDL_RenderFillRect(renderer, &outline);
         SDL_Rect end_rect { x_end + x_offset, y_end + y_offset, POINT_W, POINT_H };
         SDL_Rect aux_rect1 { x_start + x_offset, y_end + y_offset, POINT_W, POINT_H };
         SDL_Rect aux_rect2 { x_end + x_offset, y_start + y_offset, POINT_W, POINT_H };
-        SDL_RenderCopy(renderer, m_point, nullptr, &end_rect);
-        SDL_RenderCopy(renderer, m_point, nullptr, &aux_rect1);
-        SDL_RenderCopy(renderer, m_point, nullptr, &aux_rect2);
+        SDL_RenderFillRect(renderer, &end_rect);
+        SDL_RenderFillRect(renderer, &aux_rect1);
+        SDL_RenderFillRect(renderer, &aux_rect2);
     }
 }
 
