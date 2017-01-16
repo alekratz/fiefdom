@@ -5,6 +5,7 @@
 #include "toolbar.hpp"
 #include "tools.hpp"
 #include "buildings.hpp"
+#include "serf.hpp"
 #include <SDL.h>
 
 class GameScene;
@@ -15,7 +16,7 @@ using Subscene_ptr = uptr<T>;
 /**
  * PauseSubscene
  * Pauses the game. Unpauses when the "pause" key is hit.
- */
+ *
 class PauseSubscene : public Entity {
     using this_t = PauseSubscene;
 public:
@@ -23,8 +24,8 @@ public:
     ~PauseSubscene() = default;
 
 public:
-    virtual void draw() override { } /* TODO : draw pause screen */
-    virtual void update() override { } /* TODO : wait for pause hotkey */
+    virtual void draw() override { }
+    virtual void update() override { }
 
     bool done() { return m_done; }
     void reset() { m_done = false; }
@@ -32,6 +33,7 @@ public:
 private:
     bool m_done;
 };
+*/
 
 /**
  * YesNoSubscene
@@ -94,6 +96,33 @@ private:
     */
     friend void farm_callback(this_t&, ToolbarItem<this_t>&);
     friend void cancel_callback(this_t&, ToolbarItem<this_t>&);
+};
+
+/**
+ * AdministerSubscene
+ * Lets the user administer serfs.
+ */
+class AdministerSubscene : public Entity {
+public:
+    AdministerSubscene(const vec<Serf_p>& serfs);
+    ~AdministerSubscene();
+
+public:
+    virtual void draw() override;
+    virtual void update() override;
+
+    bool done() const { return m_done; }
+    void reset() { m_done = false; }
+
+private:
+    int32_t page_count();
+
+private:
+    SDL_Rect m_draw_box;
+    SDL_Texture* m_box_texture;
+    bool m_done;
+    int32_t m_current_page;
+    const vec<Serf_p>& m_serfs;
 };
 
 #endif //FIEFDOM_SUBSCENES_HPP

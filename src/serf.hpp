@@ -26,6 +26,7 @@ public:
 
     /* Properties */
 public:
+    cstref name() const { return m_name; }
     int32_t happiness() const { return m_happiness; }
     void set_happiness(int32_t value);
 

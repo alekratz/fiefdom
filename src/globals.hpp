@@ -7,8 +7,13 @@
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 
-extern int32_t x_offset;
-extern int32_t y_offset;
+/*
+ * Placement of stuff based on mouse movement
+ */
+extern int32_t x_offset;    // defined in game_grid.cpp
+extern int32_t y_offset;    // defined in game_grid.cpp
+
+extern int32_t player_money;    // defined in game_scene.cpp
 
 #define GAME_WIDTH 1024
 #define GAME_HEIGHT 768

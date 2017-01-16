@@ -12,6 +12,7 @@ class Game;
 
 enum class GameMode {
     None,
+    Administering,
     Building,
     Quitting,
 };
@@ -39,9 +40,9 @@ private:
     Toolbar<this_t> m_toolbar;
     vec<Serf_p> m_serfs;
     vec<Entity_p> m_buildings;
-    int32_t m_money;
     int32_t m_month;
     int32_t m_day;
+    AdministerSubscene m_administer_subscene;
     BuildSubscene m_building_subscene;
     YesNoSubscene m_quit_subscene;
 /* Friends */
@@ -58,6 +59,7 @@ private:
 
     You will see this pattern anytime we deal with callbacks; get used to it.
     */
+    friend void administer_mode_callback(GameScene&, ToolbarItem<GameScene>&);
     friend void building_mode_callback(GameScene&, ToolbarItem<this_t>&);
     friend void quit_callback(GameScene&, ToolbarItem<this_t>&);
 };

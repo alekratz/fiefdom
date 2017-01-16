@@ -47,5 +47,12 @@ Other important points:
  * If a serf doesn't have a hut, they have a chance to die from wolf attacks each day. If it's wintertime, they also
  have a chance of freezing to death.
 
+## Some huge post-game jam TODOs
+Because I'm writing this for a game jam, there are going to be some examples of abhorrent code in this game. I want to
+try to fix it after the game jam is over. Here's a few things I've done in the interest of time:
+* Refactoring subscenes so that they use a common UI base class
+* Re-assignable key layouts 
+    * Also using virtual key layouts instead of key characters
+
 # License
 ISC License; see LICENSE for full details.

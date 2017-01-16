@@ -6,21 +6,37 @@
 #include <iostream>
 using namespace std;
 
-const auto DRAW_BOX_WIDTH = 360;
-const auto DRAW_BOX_HEIGHT = 240;
+const auto YESNO_BOX_WIDTH = 360;
+const auto YESNO_BOX_HEIGHT = 240;
+
+const auto ADMIN_BOX_WIDTH = 360;
+const auto ADMIN_BOX_HEIGHT = GAME_HEIGHT - 100;
+
+const auto ADMIN_SERFS_PER_PAGE = 7;
+
+/*
+Right now, yes/no subscenes and administer subscene has(have) their own methods of drawing a UI box. In the future, I
+want a ui.hpp header full of basic base classes that can do this for us. I don't want to have to worry about drawing the
+UI on top of having to do the functionality of the subscene. 
+
+This is definitely a good case for common code reuse and could probably have a positive impact on development time and
+consistency.
+
+However, I want to get this game done in time for the game jam, so we're just going to have to deal with copypasting for now.
+ */
 
 /*
     Pause subscene
 */
-PauseSubscene::PauseSubscene() : m_done(false) { }
+// PauseSubscene::PauseSubscene() : m_done(false) { }
 
 /* 
     YesNo subscene   
 */
 YesNoSubscene::YesNoSubscene(cstref prompt)
     : Entity()
-    , m_draw_box({CENTER(GAME_WIDTH, DRAW_BOX_WIDTH), CENTER(GAME_HEIGHT, DRAW_BOX_HEIGHT), 
-            DRAW_BOX_WIDTH, DRAW_BOX_HEIGHT})
+    , m_draw_box({CENTER(GAME_WIDTH, YESNO_BOX_WIDTH), CENTER(GAME_HEIGHT, YESNO_BOX_HEIGHT), 
+            YESNO_BOX_WIDTH, YESNO_BOX_HEIGHT})
     , m_done(false) {
         m_box_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
             SDL_TEXTUREACCESS_STATIC | SDL_TEXTUREACCESS_TARGET, GAME_WIDTH, GAME_HEIGHT);
@@ -80,7 +96,7 @@ void YesNoSubscene::update() {
             m_result = true;
             m_done = true;
         }
-        else if(ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_n) {
+        else if(ev.type == SDL_KEYDOWN && (ev.key.keysym.sym == SDLK_n || ev.key.keysym.sym == SDLK_ESCAPE)) {
             m_result = false;
             m_done = true;
         }
@@ -168,4 +184,76 @@ void farm_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>& item) {
 
 void cancel_callback(BuildSubscene& subscene, ToolbarItem<BuildSubscene>&) {
     subscene.m_done = true;
+}
+
+/*
+    Administer subscene
+*/
+AdministerSubscene::AdministerSubscene(const vec<Serf_p>& serfs) : Entity()
+    , m_draw_box({10, CENTER(GAME_HEIGHT, ADMIN_BOX_HEIGHT), 
+            ADMIN_BOX_WIDTH, ADMIN_BOX_HEIGHT})
+    , m_done(false)
+    , m_current_page(0)
+    , m_serfs(serfs) {
+    m_box_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
+        SDL_TEXTUREACCESS_STATIC | SDL_TEXTUREACCESS_TARGET, GAME_WIDTH, GAME_HEIGHT);
+    SDL_SetRenderTarget(renderer, m_box_texture);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(renderer, nullptr);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_Rect outline {1, 1, GAME_WIDTH - 2, GAME_HEIGHT - 2};
+    SDL_RenderDrawRect(renderer, &outline);
+    SDL_SetRenderTarget(renderer, nullptr);
+}
+
+AdministerSubscene::~AdministerSubscene() {
+    SDL_DestroyTexture(m_box_texture);
+}
+
+void AdministerSubscene::draw() {
+    SDL_SetRenderTarget(renderer, nullptr);
+    SDL_RenderCopy(renderer, m_box_texture, nullptr, &m_draw_box);
+}
+
+void AdministerSubscene::update() {
+    /* At any point, we can quit out of our current mode by pressing esc or c */
+    constexpr auto EVENT_SZ = 128; // arbitrary event size
+    static SDL_Event evs[EVENT_SZ]; 
+    int count = SDL_PeepEvents(evs, EVENT_SZ, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+    bool go_back = false, go_fwd = false;
+    for(int i = 0; i < count; i++) {
+        auto ev = evs[i];
+        if(ev.type == SDL_KEYDOWN) {
+            switch(ev.key.keysym.sym) {
+                case SDLK_ESCAPE: {
+                    m_done = true;
+                } break;
+                case SDLK_q: {
+                    go_back = true;
+                } break;
+                case SDLK_r: {
+                    go_fwd = true;
+                } break;
+            }
+        }
+
+        // cancel each other out
+        if(go_back && go_fwd)
+            go_back = go_fwd = false;
+        
+        if(go_back && m_current_page > 0)
+            m_current_page -= 1;
+        else if(go_fwd && m_current_page < (page_count() - 1))
+            m_current_page += 1;
+        
+        if(m_current_page >= page_count()) {
+            // Because we're looking at a reference to the serf vec, it may change between when we last changed pages
+            // and when the number of pages actually changed
+            m_current_page = page_count() - 1;
+        }
+    }
+}
+
+int32_t AdministerSubscene::page_count() {
+    return m_serfs.size() / ADMIN_SERFS_PER_PAGE;
 }

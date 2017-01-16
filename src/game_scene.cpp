@@ -7,7 +7,11 @@ constexpr auto START_MONEY = 1000;
 constexpr auto MAX_DAYS = 28;
 constexpr auto MAX_MONTH = 12;
 
+// defined in globals.hpp
+int32_t player_money;
+
 /* Callback prototypes */
+void administer_mode_callback(GameScene&, ToolbarItem<GameScene>&);
 void building_mode_callback(GameScene&, ToolbarItem<GameScene>&);
 void quit_callback(GameScene&, ToolbarItem<GameScene>&);
 
@@ -17,15 +21,19 @@ GameScene::GameScene(bool& running)
     , m_running(running)
     , m_game_grid(std::make_unique<GameGrid>())
     , m_toolbar(*this)
-    , m_money(START_MONEY)
     , m_month(3)
     , m_day(1)
+    , m_administer_subscene(m_serfs)
     , m_building_subscene(m_buildings)
     , m_quit_subscene("Are you sure you want to quit?") {
+
+    /* there really should be no instance where we have multiple game_scenes
+       instantiated, so player_money is initialized here */
+    player_money = START_MONEY;
     m_serfs.push_back(std::make_unique<Serf>("Test", 0, 0));
+    m_toolbar.add_item("&administer", administer_mode_callback);
     m_toolbar.add_item("&building", building_mode_callback);
     m_toolbar.add_item("&quit", quit_callback);
-    // m_toolbar.add_item("&select", test_callback);
 }
 
 void GameScene::draw() {
@@ -41,6 +49,10 @@ void GameScene::draw() {
     case GameMode::None:
         {
             // Any non-subscene updates
+        } break;
+    case GameMode::Administering:
+        {
+            m_administer_subscene.draw();
         } break;
     case GameMode::Building:
         {
@@ -61,17 +73,27 @@ void GameScene::update() {
             b->update();
         for(auto& s : m_serfs)
             s->update();
-        m_toolbar.update();
     };
 
     switch(mode) {
     case GameMode::None:
         {
             generic_update();
+            m_toolbar.update();
+        } break;
+    case GameMode::Administering:
+        {
+            generic_update();
+            m_administer_subscene.update();
+            if(m_administer_subscene.done()) {
+                mode = GameMode::None;
+                m_toolbar.untoggle_all();
+                m_administer_subscene.reset();
+            }
         } break;
     case GameMode::Building:
         {
-            m_game_grid->update();
+            generic_update();
             m_building_subscene.update();
             if(m_building_subscene.done()) {
                 mode = GameMode::None;
@@ -89,6 +111,18 @@ void GameScene::update() {
                 m_toolbar.untoggle_all();
             }
         } break;
+    }
+}
+
+void administer_mode_callback(GameScene& scene, ToolbarItem<GameScene>& item) {
+    bool toggled = item.toggled;
+    scene.m_toolbar.untoggle_all();
+    if(toggled) {
+        scene.mode = GameMode::None;
+    }
+    else {
+        item.toggled = true;
+        scene.mode = GameMode::Administering;
     }
 }
 
