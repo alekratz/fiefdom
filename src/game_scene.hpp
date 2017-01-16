@@ -28,8 +28,8 @@ public:
 
 /* Operations */
 public:
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 
 /* Members */
 public:

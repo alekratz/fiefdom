@@ -22,8 +22,8 @@ public:
     ~GameGrid();
 
 public:
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 };
 
 using GameGrid_p = uptr<GameGrid>;

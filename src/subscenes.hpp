@@ -24,8 +24,8 @@ public:
     ~PauseSubscene() = default;
 
 public:
-    virtual void draw() override { }
-    virtual void update() override { }
+    void draw() override { }
+    void update() override { }
 
     bool done() { return m_done; }
     void reset() { m_done = false; }
@@ -45,8 +45,8 @@ public:
     YesNoSubscene(cstref prompt);
     ~YesNoSubscene();
 public:
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 
     bool result() { return m_result; }
     bool done() { return m_done; }
@@ -73,8 +73,8 @@ public:
     ~BuildSubscene() = default;
 
 public:
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 
     bool done() const { return m_done; }
     void reset() { 
@@ -108,8 +108,8 @@ public:
     ~AdministerSubscene();
 
 public:
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 
     bool done() const { return m_done; }
     void reset() { m_done = false; }

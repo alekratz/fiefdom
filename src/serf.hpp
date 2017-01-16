@@ -21,8 +21,8 @@ public:
      */
     void day();
 
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 
     /* Properties */
 public:

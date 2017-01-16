@@ -17,8 +17,8 @@ public:
     ~Farm();
 
 public:
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 
 public:
     SDL_Rect dims;

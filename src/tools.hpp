@@ -14,8 +14,8 @@ public:
     ~DrawTool();
 
 public:
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 
 public:
     bool done() const { return m_done; }

@@ -27,8 +27,8 @@ public:
 public:
     /* Untoggles all toolbar items */
     void untoggle_all();
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 
     /**
      * Adds an item to the toolbar, using the Windows style keyboard shortcut (i.e. &File, E&xit, etc.)
@@ -59,8 +59,8 @@ public:
         return m_width;
     }
 
-    virtual void draw() override;
-    virtual void update() override;
+    void draw() override;
+    void update() override;
 public:
     /** The text displayed by the toolbar item */
     str name;
